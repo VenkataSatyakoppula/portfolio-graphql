@@ -1,0 +1,95 @@
+# =======================================
+# .NET / C# Build Artifacts
+# =======================================
+bin/
+obj/
+[Bb]uild/
+[Ll]ogs/
+*.exe
+*.dll
+*.pdb
+*.mdb
+*.log
+*.cache
+*.db
+*.db-shm
+*.db-wal
+
+# Visual Studio user files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.iml
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+
+# =======================================
+# Environment & Secrets
+# =======================================
+# User-specific settings
+*.env
+.env.*
+.env.local
+*.secret.json
+secrets.json
+
+# AppSettings overrides (keep the main config)
+appsettings.Development.json
+appsettings.Local.json
+
+# =======================================
+# Logs & Data
+# =======================================
+logs/
+*.log
+dump.rdb
+*.pid
+*.seed
+
+# =======================================
+# MongoDB related
+# =======================================
+# Local data directories
+data/
+dump/
+*.bson
+*.metadata.json
+
+# =======================================
+# Package / Build cache
+# =======================================
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+
+# Node (if you have a frontend in the same repo)
+node_modules/
+dist/
+build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =======================================
+# IDE settings & misc
+# =======================================
+*.orig
+*.rej
+*.sln.GhostDoc.xml
+*.DotSettings.user
+
+.fake
