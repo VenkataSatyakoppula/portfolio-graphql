@@ -60,4 +60,31 @@ namespace portfolio_graphql.GraphQL.DataLoaders
             return result;
         }
     }
+
+    // Add loader for MgtAppUser by id for employee links
+    public sealed class UserByIdDataLoader : BatchDataLoader<string, MgtAppUser>
+    {
+        private readonly IMongoCollection<MgtAppUser> _users;
+
+        public UserByIdDataLoader(IBatchScheduler scheduler, MongoDbContext dbContext, DataLoaderOptions? options = null)
+            : base(scheduler, options ?? new DataLoaderOptions())
+        {
+            _users = dbContext.Users;
+        }
+
+        protected override async Task<IReadOnlyDictionary<string, MgtAppUser>> LoadBatchAsync(
+            IReadOnlyList<string> keys,
+            CancellationToken cancellationToken)
+        {
+            var filter = Builders<MgtAppUser>.Filter.In(u => u._id, keys);
+            var items = await _users.Find(filter).ToListAsync(cancellationToken);
+
+            var result = new Dictionary<string, MgtAppUser>(items.Count);
+            foreach (var item in items)
+            {
+                result[item._id] = item;
+            }
+            return result;
+        }
+    }
 }

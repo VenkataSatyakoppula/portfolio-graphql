@@ -24,17 +24,17 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappRole")]
-        public async Task<MgtAppRole?> UpdateOneMgtAppRole([GraphQLName("query")] MgtAppRoleQueryInput query, MgtAppRoleUpdateInput update, [Service] MongoDbContext ctx)
+        public async Task<MgtAppRole?> UpdateOneMgtAppRole([GraphQLName("query")] MgtAppRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppRole>>();
-            if (update.rolename != null)
+            if (set.rolename != null)
             {
-                updates.Add(Builders<MgtAppRole>.Update.Set(x => x.rolename, update.rolename));
+                updates.Add(Builders<MgtAppRole>.Update.Set(x => x.rolename, set.rolename));
             }
             if (!updates.Any())
             {
-                throw new GraphQLException("No update fields provided.");
+                throw new GraphQLException("No set fields provided.");
             }
             var combinedUpdate = Builders<MgtAppRole>.Update.Combine(updates);
             var options = new FindOneAndUpdateOptions<MgtAppRole> { ReturnDocument = ReturnDocument.After };
@@ -83,19 +83,19 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappRoles")]
-        public async Task<UpdateManyMgtAppRolesPayload> UpdateManyMgtAppRoles([GraphQLName("query")] MgtAppRoleQueryInput query, MgtAppRoleUpdateInput update, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppRolesPayload> UpdateManyMgtAppRoles([GraphQLName("query")] MgtAppRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 
             var updates = new List<UpdateDefinition<MgtAppRole>>();
-            if (update.rolename != null)
+            if (set.rolename != null)
             {
-                updates.Add(Builders<MgtAppRole>.Update.Set(x => x.rolename, update.rolename));
+                updates.Add(Builders<MgtAppRole>.Update.Set(x => x.rolename, set.rolename));
             }
 
             if (!updates.Any())
             {
-                throw new GraphQLException("No update fields provided.");
+                throw new GraphQLException("No set fields provided.");
             }
 
             var combinedUpdate = Builders<MgtAppRole>.Update.Combine(updates);

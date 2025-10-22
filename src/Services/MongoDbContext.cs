@@ -16,6 +16,11 @@ namespace portfolio_graphql.Services
         public IMongoCollection<MgtAppClient> Clients => _database.GetCollection<MgtAppClient>("mgtapp-client");
         public IMongoCollection<MgtAppRole> Roles => _database.GetCollection<MgtAppRole>("mgtapp-role");
         public IMongoCollection<MgtAppUser> Users => _database.GetCollection<MgtAppUser>("mgtapp-user");
+        public IMongoCollection<MgtAppPosition> Positions => _database.GetCollection<MgtAppPosition>("mgtapp-position");
+        public IMongoCollection<MgtAppGroup> Groups => _database.GetCollection<MgtAppGroup>("mgtapp-groups");
+        public IMongoCollection<MgtAppProfile> Profiles => _database.GetCollection<MgtAppProfile>("mgtapp-profile");
+        public IMongoCollection<MgtAppEmployee> Employees => _database.GetCollection<MgtAppEmployee>("mgtapp-employee");
+        public IMongoCollection<MgtAppBankDetails> BankDetails => _database.GetCollection<MgtAppBankDetails>("mgtapp-bankdetails");
     }
 }
 

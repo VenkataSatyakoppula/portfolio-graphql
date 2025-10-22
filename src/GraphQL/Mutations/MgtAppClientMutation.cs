@@ -45,19 +45,19 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappClient")]
-        public async Task<MgtAppClient?> UpdateOneMgtAppClient([GraphQLName("query")] MgtAppClientQueryInput query, MgtAppClientUpdateInput update, [Service] MongoDbContext ctx)
+        public async Task<MgtAppClient?> UpdateOneMgtAppClient([GraphQLName("query")] MgtAppClientQueryInput query, MgtAppClientSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 
             var updates = new List<UpdateDefinition<MgtAppClient>>();
-            if (update.clientname != null)
+            if (set.clientname != null)
             {
-                updates.Add(Builders<MgtAppClient>.Update.Set(x => x.clientname, update.clientname));
+                updates.Add(Builders<MgtAppClient>.Update.Set(x => x.clientname, set.clientname));
             }
 
             if (!updates.Any())
             {
-                throw new GraphQLException("No update fields provided.");
+                throw new GraphQLException("No set fields provided.");
             }
 
             var combinedUpdate = Builders<MgtAppClient>.Update.Combine(updates);
@@ -91,19 +91,19 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappClients")]
-        public async Task<UpdateManyMgtAppClientsPayload> UpdateManyMgtAppClients([GraphQLName("query")] MgtAppClientQueryInput query, MgtAppClientUpdateInput update, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppClientsPayload> UpdateManyMgtAppClients([GraphQLName("query")] MgtAppClientQueryInput query, MgtAppClientSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 
             var updates = new List<UpdateDefinition<MgtAppClient>>();
-            if (update.clientname != null)
+            if (set.clientname != null)
             {
-                updates.Add(Builders<MgtAppClient>.Update.Set(x => x.clientname, update.clientname));
+                updates.Add(Builders<MgtAppClient>.Update.Set(x => x.clientname, set.clientname));
             }
 
             if (!updates.Any())
             {
-                throw new GraphQLException("No update fields provided.");
+                throw new GraphQLException("No set fields provided.");
             }
 
             var combinedUpdate = Builders<MgtAppClient>.Update.Combine(updates);

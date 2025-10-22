@@ -34,10 +34,18 @@ namespace portfolio_graphql.GraphQL.Mutations
         public async Task<MgtAppUser> InsertOneMgtAppUser(MgtAppUserInsertInput input, [Service] MongoDbContext ctx)
         {
             var id = ObjectId.GenerateNewId().ToString();
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid)).FirstOrDefaultAsync();
-            if (client == null) throw new GraphQLException("Invalid clientid: client not found.");
-            var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, input.roleid)).FirstOrDefaultAsync();
-            if (role == null) throw new GraphQLException("Invalid roleid: role not found.");
+            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            {
+                throw new GraphQLException("clientid.link is required.");
+            }
+            if (input.roleid == null || string.IsNullOrWhiteSpace(input.roleid.link))
+            {
+                throw new GraphQLException("roleid.link is required.");
+            }
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
+            var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, input.roleid.link)).FirstOrDefaultAsync();
+            if (role == null) throw new GraphQLException("Invalid roleid.link: role not found.");
 
             var doc = new MgtAppUser
             {
@@ -52,35 +60,45 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappUser")]
-        public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtAppUserQueryInput query, MgtAppUserUpdateInput update, [Service] MongoDbContext ctx)
+        public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtAppUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
-
             var updates = new List<UpdateDefinition<MgtAppUser>>();
-            if (update.username != null)
+
+            if (set.username != null)
             {
-                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.username, update.username));
+                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.username, set.username));
             }
-            if (update.useremail != null)
+            if (set.useremail != null)
             {
-                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.useremail, update.useremail));
+                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.useremail, set.useremail));
             }
-            if (update.clientid != null)
+
+            if (set.clientid != null)
             {
-                var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, update.clientid)).FirstOrDefaultAsync();
-                if (client == null) throw new GraphQLException("Invalid clientid: client not found.");
+                if (string.IsNullOrWhiteSpace(set.clientid.link))
+                {
+                    throw new GraphQLException("clientid.link is required when provided.");
+                }
+                var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, set.clientid.link)).FirstOrDefaultAsync();
+                if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
                 updates.Add(Builders<MgtAppUser>.Update.Set(x => x.clientid, client._id));
             }
-            if (update.roleid != null)
+
+            if (set.roleid != null)
             {
-                var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, update.roleid)).FirstOrDefaultAsync();
-                if (role == null) throw new GraphQLException("Invalid roleid: role not found.");
+                if (string.IsNullOrWhiteSpace(set.roleid.link))
+                {
+                    throw new GraphQLException("roleid.link is required when provided.");
+                }
+                var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, set.roleid.link)).FirstOrDefaultAsync();
+                if (role == null) throw new GraphQLException("Invalid roleid.link: role not found.");
                 updates.Add(Builders<MgtAppUser>.Update.Set(x => x.roleid, role._id));
             }
 
             if (!updates.Any())
             {
-                throw new GraphQLException("No update fields provided.");
+                throw new GraphQLException("No set fields provided.");
             }
 
             var combinedUpdate = Builders<MgtAppUser>.Update.Combine(updates);
@@ -114,35 +132,45 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappUsers")]
-        public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtAppUserQueryInput query, MgtAppUserUpdateInput update, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtAppUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
-
             var updates = new List<UpdateDefinition<MgtAppUser>>();
-            if (update.username != null)
+
+            if (set.username != null)
             {
-                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.username, update.username));
+                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.username, set.username));
             }
-            if (update.useremail != null)
+            if (set.useremail != null)
             {
-                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.useremail, update.useremail));
+                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.useremail, set.useremail));
             }
-            if (update.clientid != null)
+
+            if (set.clientid != null)
             {
-                var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, update.clientid)).FirstOrDefaultAsync();
-                if (client == null) throw new GraphQLException("Invalid clientid: client not found.");
+                if (string.IsNullOrWhiteSpace(set.clientid.link))
+                {
+                    throw new GraphQLException("clientid.link is required when provided.");
+                }
+                var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, set.clientid.link)).FirstOrDefaultAsync();
+                if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
                 updates.Add(Builders<MgtAppUser>.Update.Set(x => x.clientid, client._id));
             }
-            if (update.roleid != null)
+
+            if (set.roleid != null)
             {
-                var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, update.roleid)).FirstOrDefaultAsync();
-                if (role == null) throw new GraphQLException("Invalid roleid: role not found.");
+                if (string.IsNullOrWhiteSpace(set.roleid.link))
+                {
+                    throw new GraphQLException("roleid.link is required when provided.");
+                }
+                var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, set.roleid.link)).FirstOrDefaultAsync();
+                if (role == null) throw new GraphQLException("Invalid roleid.link: role not found.");
                 updates.Add(Builders<MgtAppUser>.Update.Set(x => x.roleid, role._id));
             }
 
             if (!updates.Any())
             {
-                throw new GraphQLException("No update fields provided.");
+                throw new GraphQLException("No set fields provided.");
             }
 
             var combinedUpdate = Builders<MgtAppUser>.Update.Combine(updates);
