@@ -18,7 +18,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppImmigrationQuery
     {
         [GraphQLName("mgtappImmigrations")]
-        public async Task<List<MgtAppImmigration>> GetMgtAppImmigrations([GraphQLName("query")] MgtAppImmigrationQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppImmigration>> GetMgtAppImmigrations([GraphQLName("query")] MgtappImmigrationQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Immigrations.Find(filter).ToListAsync();
@@ -26,14 +26,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappImmigration")]
-        public async Task<MgtAppImmigration?> GetMgtAppImmigration([GraphQLName("query")] MgtAppImmigrationQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppImmigration?> GetMgtAppImmigration([GraphQLName("query")] MgtappImmigrationQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Immigrations.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppImmigration> BuildFilter(MgtAppImmigrationQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppImmigration> BuildFilter(MgtappImmigrationQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

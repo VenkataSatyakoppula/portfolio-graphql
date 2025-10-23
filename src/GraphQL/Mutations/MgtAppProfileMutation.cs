@@ -83,7 +83,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappProfile")]
-        public async Task<MgtAppProfile?> UpdateOneMgtAppProfile([GraphQLName("query")] MgtAppProfileQueryInput query, MgtAppProfileSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppProfile?> UpdateOneMgtAppProfile([GraphQLName("query")] MgtappProfileQueryInput query, MgtAppProfileSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -140,7 +140,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappProfile")]
-        public async Task<MgtAppProfile?> DeleteOneMgtAppProfile([GraphQLName("query")] MgtAppProfileQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppProfile?> DeleteOneMgtAppProfile([GraphQLName("query")] MgtappProfileQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id)
                 && query.clientid == null
@@ -183,7 +183,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappProfiles")]
-        public async Task<DeleteManyMgtAppProfilesPayload> DeleteManyMgtAppProfiles([GraphQLName("query")] MgtAppProfileQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppProfilesPayload> DeleteManyMgtAppProfiles([GraphQLName("query")] MgtappProfileQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id)
                 && query.clientid == null
@@ -226,7 +226,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappProfiles")]
-        public async Task<UpdateManyMgtAppProfilesPayload> UpdateManyMgtAppProfiles([GraphQLName("query")] MgtAppProfileQueryInput query, MgtAppProfileSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppProfilesPayload> UpdateManyMgtAppProfiles([GraphQLName("query")] MgtappProfileQueryInput query, MgtAppProfileSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -281,7 +281,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppProfilesPayload { modifiedCount = (int)result.ModifiedCount };
         }
 
-    private static FilterDefinition<MgtAppProfile> BuildFilter(MgtAppProfileQueryInput? query, MongoDbContext ctx)
+    private static FilterDefinition<MgtAppProfile> BuildFilter(MgtappProfileQueryInput? query, MongoDbContext ctx)
     {
         if (query == null)
         {

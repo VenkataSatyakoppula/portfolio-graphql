@@ -34,11 +34,12 @@ namespace portfolio_graphql.GraphQL.Mutations
             return doc;
         }
 
+        [GraphQLName("updateOneMgtappTimesheets")]
         public async Task<MgtAppTimesheets?> UpdateOneMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
-            MgtAppTimesheetsQueryInput query,
+            MgtappTimesheetsQueryInput query,
             MgtAppTimesheetsSetInput set)
-        {
+         {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
             var updates = new List<UpdateDefinition<MgtAppTimesheets>>();
@@ -62,14 +63,15 @@ namespace portfolio_graphql.GraphQL.Mutations
             return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<MgtAppTimesheets> { ReturnDocument = ReturnDocument.After });
         }
 
+        [GraphQLName("updateManyMgtappTimesheets")]
         public async Task<long> UpdateManyMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
-            MgtAppTimesheetsQueryInput query,
+            MgtappTimesheetsQueryInput query,
             MgtAppTimesheetsSetInput set)
-        {
+         {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
-            var updates = new List<UpdateDefinition<MgtAppTimesheets>>();
+             var updates = new List<UpdateDefinition<MgtAppTimesheets>>();
 
             if (set.timesheetmonth != null) updates.Add(Builders<MgtAppTimesheets>.Update.Set(x => x.timesheetmonth, set.timesheetmonth));
             if (set.clientid != null) updates.Add(Builders<MgtAppTimesheets>.Update.Set(x => x.clientid, set.clientid.link));
@@ -89,11 +91,11 @@ namespace portfolio_graphql.GraphQL.Mutations
             var update = Builders<MgtAppTimesheets>.Update.Combine(updates);
             var result = await collection.UpdateManyAsync(filter, update);
             return result.ModifiedCount;
-        }
+         }
 
         public async Task<MgtAppTimesheets?> DeleteOneMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
-            MgtAppTimesheetsQueryInput query)
+            MgtappTimesheetsQueryInput query)
         {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
@@ -102,7 +104,7 @@ namespace portfolio_graphql.GraphQL.Mutations
 
         public async Task<long> DeleteManyMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
-            MgtAppTimesheetsQueryInput query)
+            MgtappTimesheetsQueryInput query)
         {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);

@@ -17,7 +17,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppUserQuery
     {
         [GraphQLName("mgtappUsers")]
-        public async Task<List<MgtAppUser>> GetMgtAppUsers([GraphQLName("query")] MgtAppUserQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppUser>> GetMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Users.Find(filter).ToListAsync();
@@ -25,14 +25,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappUser")]
-        public async Task<MgtAppUser?> GetMgtAppUser([GraphQLName("query")] MgtAppUserQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppUser?> GetMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Users.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        private static FilterDefinition<MgtAppUser> BuildFilter(MgtAppUserQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppUser> BuildFilter(MgtappUserQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {
@@ -44,6 +44,16 @@ namespace portfolio_graphql.GraphQL.Queries
             if (!string.IsNullOrWhiteSpace(query._id))
             {
                 filters.Add(Builders<MgtAppUser>.Filter.Eq(x => x._id, query._id));
+            }
+
+            // Direct equality filters
+            if (!string.IsNullOrWhiteSpace(query.username))
+            {
+                filters.Add(Builders<MgtAppUser>.Filter.Eq(x => x.username, query.username));
+            }
+            if (!string.IsNullOrWhiteSpace(query.useremail))
+            {
+                filters.Add(Builders<MgtAppUser>.Filter.Eq(x => x.useremail, query.useremail));
             }
 
             if (query.usernameQuery != null)

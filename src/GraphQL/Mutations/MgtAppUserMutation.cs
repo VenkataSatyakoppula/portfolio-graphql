@@ -60,7 +60,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappUser")]
-        public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtAppUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppUser>>();
@@ -108,7 +108,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappUser")]
-        public async Task<MgtAppUser?> DeleteOneMgtAppUser([GraphQLName("query")] MgtAppUserQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppUser?> DeleteOneMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && query.usernameQuery == null && query.useremailQuery == null && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -120,7 +120,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappUsers")]
-        public async Task<DeleteManyMgtAppUsersPayload> DeleteManyMgtAppUsers([GraphQLName("query")] MgtAppUserQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppUsersPayload> DeleteManyMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && query.usernameQuery == null && query.useremailQuery == null && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -132,7 +132,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappUsers")]
-        public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtAppUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppUser>>();
@@ -178,7 +178,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppUsersPayload { modifiedCount = (int)result.ModifiedCount };
         }
 
-        private static FilterDefinition<MgtAppUser> BuildFilter(MgtAppUserQueryInput query)
+        private static FilterDefinition<MgtAppUser> BuildFilter(MgtappUserQueryInput query)
         {
             var filters = new List<FilterDefinition<MgtAppUser>>();
 

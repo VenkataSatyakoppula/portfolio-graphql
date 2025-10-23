@@ -5,7 +5,7 @@ using portfolio_graphql.GraphQL.Types.MgtAppEmployeeTypes;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppImmigrationTypes
 {
-    public class MgtAppImmigrationQueryInput
+    public class MgtappImmigrationQueryInput
     {
         public string? _id { get; set; }
 
@@ -15,10 +15,10 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppImmigrationTypes
         public string? immigrationsubstatus { get; set; }
         public StringQueryInput? immigrationsubstatusQuery { get; set; }
 
-        public MgtAppClientQueryInput? clientid { get; set; }
-        public MgtAppEmployeeQueryInput? employeeid { get; set; }
+        public MgtappClientQueryInput? clientid { get; set; }
+        public MgtappEmployeeQueryInput? employeeid { get; set; }
 
-        public List<MgtAppImmigrationQueryInput>? and { get; set; }
-        public List<MgtAppImmigrationQueryInput>? or { get; set; }
+        public List<MgtappImmigrationQueryInput>? and { get; set; }
+        public List<MgtappImmigrationQueryInput>? or { get; set; }
     }
 }

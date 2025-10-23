@@ -5,12 +5,12 @@ using portfolio_graphql.GraphQL.Types.MgtAppUserTypes;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppEmployeeTypes
 {
-    public class MgtAppEmployeeQueryInput
+    public class MgtappEmployeeQueryInput
     {
         public string? _id { get; set; }
-        public MgtAppClientQueryInput? clientid { get; set; }
-        public MgtAppUserQueryInput? employeeuserid { get; set; }
-        public MgtAppUserQueryInput? employeemanagerid { get; set; }
+        public MgtappClientQueryInput? clientid { get; set; }
+        public MgtappUserQueryInput? employeeuserid { get; set; }
+        public MgtappUserQueryInput? employeemanagerid { get; set; }
 
         public string? employeephone { get; set; }
         public StringQueryInput? employeephoneQuery { get; set; }
@@ -54,7 +54,7 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppEmployeeTypes
         public string? employeestatus { get; set; }
         public StringQueryInput? employeestatusQuery { get; set; }
 
-        public List<MgtAppEmployeeQueryInput>? and { get; set; }
-        public List<MgtAppEmployeeQueryInput>? or { get; set; }
+        public List<MgtappEmployeeQueryInput>? and { get; set; }
+        public List<MgtappEmployeeQueryInput>? or { get; set; }
     }
 }

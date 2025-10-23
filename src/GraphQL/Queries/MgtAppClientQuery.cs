@@ -16,7 +16,7 @@ namespace portfolio_graphql.GraphQL.Queries
     {
         // Query multiple clients by input filter
         [GraphQLName("mgtappClients")]
-        public async Task<List<MgtAppClient>> GetMgtAppClients([GraphQLName("query")] MgtAppClientQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppClient>> GetMgtAppClients([GraphQLName("query")] MgtappClientQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var result = await ctx.Clients.Find(filter).ToListAsync();
@@ -25,14 +25,14 @@ namespace portfolio_graphql.GraphQL.Queries
 
         // Query single client by input filter
         [GraphQLName("mgtappClient")]
-        public async Task<MgtAppClient?> GetMgtAppClient([GraphQLName("query")] MgtAppClientQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppClient?> GetMgtAppClient([GraphQLName("query")] MgtappClientQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var result = await ctx.Clients.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppClient> BuildFilter(MgtAppClientQueryInput? query)
+        public static FilterDefinition<MgtAppClient> BuildFilter(MgtappClientQueryInput? query)
         {
             if (query == null)
             {

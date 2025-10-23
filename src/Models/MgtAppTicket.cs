@@ -22,6 +22,14 @@ namespace portfolio_graphql.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? ticketassignedto { get; set; }
 
+        [GraphQLIgnore]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? positionid { get; set; }
+
+        [GraphQLIgnore]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? groupid { get; set; }
+
         public string? ticketcreateddate { get; set; }
         public string? timesheetweek { get; set; }
         public string? tickettype { get; set; }

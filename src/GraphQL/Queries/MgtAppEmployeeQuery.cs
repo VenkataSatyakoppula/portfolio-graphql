@@ -17,7 +17,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppEmployeeQuery
     {
         [GraphQLName("mgtappEmployees")]
-        public async Task<List<MgtAppEmployee>> GetMgtAppEmployees([GraphQLName("query")] MgtAppEmployeeQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppEmployee>> GetMgtAppEmployees([GraphQLName("query")] MgtappEmployeeQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Employees.Find(filter).ToListAsync();
@@ -25,14 +25,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappEmployee")]
-        public async Task<MgtAppEmployee?> GetMgtAppEmployee([GraphQLName("query")] MgtAppEmployeeQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppEmployee?> GetMgtAppEmployee([GraphQLName("query")] MgtappEmployeeQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Employees.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppEmployee> BuildFilter(MgtAppEmployeeQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppEmployee> BuildFilter(MgtappEmployeeQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {
@@ -185,7 +185,7 @@ namespace portfolio_graphql.GraphQL.Queries
             return Builders<MgtAppEmployee>.Filter.And(filters);
         }
 
-        private static FilterDefinition<MgtAppUser> BuildUserFilter(MgtAppUserQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppUser> BuildUserFilter(MgtappUserQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

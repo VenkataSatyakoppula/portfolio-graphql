@@ -18,7 +18,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppBankDetailsQuery
     {
         [GraphQLName("mgtappBankDetails")]
-        public async Task<List<MgtAppBankDetails>> GetMgtAppBankDetails([GraphQLName("query")] MgtAppBankDetailsQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppBankDetails>> GetMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.BankDetails.Find(filter).ToListAsync();
@@ -26,14 +26,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappBankDetail")]
-        public async Task<MgtAppBankDetails?> GetMgtAppBankDetail([GraphQLName("query")] MgtAppBankDetailsQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppBankDetails?> GetMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.BankDetails.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppBankDetails> BuildFilter(MgtAppBankDetailsQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppBankDetails> BuildFilter(MgtappBankDetailsQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

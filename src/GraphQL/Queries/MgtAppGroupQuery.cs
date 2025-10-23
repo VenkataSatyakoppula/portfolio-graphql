@@ -16,7 +16,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppGroupQuery
     {
         [GraphQLName("mgtappGroups")]
-        public async Task<List<MgtAppGroup>> GetMgtAppGroups([GraphQLName("query")] MgtAppGroupQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppGroup>> GetMgtAppGroups([GraphQLName("query")] MgtappGroupQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Groups.Find(filter).ToListAsync();
@@ -24,14 +24,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappGroup")]
-        public async Task<MgtAppGroup?> GetMgtAppGroup([GraphQLName("query")] MgtAppGroupQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppGroup?> GetMgtAppGroup([GraphQLName("query")] MgtappGroupQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Groups.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        private static FilterDefinition<MgtAppGroup> BuildFilter(MgtAppGroupQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppGroup> BuildFilter(MgtappGroupQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

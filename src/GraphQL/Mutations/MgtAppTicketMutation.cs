@@ -23,6 +23,8 @@ namespace portfolio_graphql.GraphQL.Mutations
                 profileid = input.profileid?.link,
                 ticketcreatedby = input.ticketcreatedby?.link,
                 ticketassignedto = input.ticketassignedto?.link,
+                positionid = input.positionid?.link,
+                groupid = input.groupid?.link,
                 ticketcreateddate = input.ticketcreateddate,
                 timesheetweek = input.timesheetweek,
                 tickettype = input.tickettype,
@@ -35,7 +37,7 @@ namespace portfolio_graphql.GraphQL.Mutations
 
         public async Task<MgtAppTicket?> UpdateOneMgtAppTicket(
             [Service] MongoDbContext dbContext,
-            portfolio_graphql.GraphQL.Types.MgtAppTicketQueryInput query,
+            portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query,
             MgtAppTicketSetInput set)
         {
             var collection = dbContext.Tickets;
@@ -45,6 +47,8 @@ namespace portfolio_graphql.GraphQL.Mutations
             if (set.profileid != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.profileid, set.profileid.link));
             if (set.ticketcreatedby != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketcreatedby, set.ticketcreatedby.link));
             if (set.ticketassignedto != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketassignedto, set.ticketassignedto.link));
+            if (set.positionid != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.positionid, set.positionid.link));
+            if (set.groupid != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.groupid, set.groupid.link));
 
             if (set.ticketcreateddate != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketcreateddate, set.ticketcreateddate));
             if (set.timesheetweek != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.timesheetweek, set.timesheetweek));
@@ -60,7 +64,7 @@ namespace portfolio_graphql.GraphQL.Mutations
 
         public async Task<long> UpdateManyMgtAppTicket(
             [Service] MongoDbContext dbContext,
-            portfolio_graphql.GraphQL.Types.MgtAppTicketQueryInput query,
+            portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query,
             MgtAppTicketSetInput set)
         {
             var collection = dbContext.Tickets;
@@ -70,6 +74,8 @@ namespace portfolio_graphql.GraphQL.Mutations
             if (set.profileid != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.profileid, set.profileid.link));
             if (set.ticketcreatedby != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketcreatedby, set.ticketcreatedby.link));
             if (set.ticketassignedto != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketassignedto, set.ticketassignedto.link));
+            if (set.positionid != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.positionid, set.positionid.link));
+            if (set.groupid != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.groupid, set.groupid.link));
 
             if (set.ticketcreateddate != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketcreateddate, set.ticketcreateddate));
             if (set.timesheetweek != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.timesheetweek, set.timesheetweek));
@@ -86,7 +92,7 @@ namespace portfolio_graphql.GraphQL.Mutations
 
         public async Task<MgtAppTicket?> DeleteOneMgtAppTicket(
             [Service] MongoDbContext dbContext,
-            portfolio_graphql.GraphQL.Types.MgtAppTicketQueryInput query)
+            portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query)
         {
             var collection = dbContext.Tickets;
             var filter = MgtAppTicketQuery.BuildFilter(query, dbContext);
@@ -95,7 +101,7 @@ namespace portfolio_graphql.GraphQL.Mutations
 
         public async Task<long> DeleteManyMgtAppTicket(
             [Service] MongoDbContext dbContext,
-            portfolio_graphql.GraphQL.Types.MgtAppTicketQueryInput query)
+            portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query)
         {
             var collection = dbContext.Tickets;
             var filter = MgtAppTicketQuery.BuildFilter(query, dbContext);

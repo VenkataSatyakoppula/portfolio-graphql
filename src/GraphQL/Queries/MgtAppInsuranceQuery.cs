@@ -18,7 +18,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppInsuranceQuery
     {
         [GraphQLName("mgtappInsurances")]
-        public async Task<List<MgtAppInsurance>> GetMgtAppInsurances([GraphQLName("query")] MgtAppInsuranceQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppInsurance>> GetMgtAppInsurances([GraphQLName("query")] MgtappInsuranceQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Insurances.Find(filter).ToListAsync();
@@ -26,14 +26,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappInsurance")]
-        public async Task<MgtAppInsurance?> GetMgtAppInsurance([GraphQLName("query")] MgtAppInsuranceQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppInsurance?> GetMgtAppInsurance([GraphQLName("query")] MgtappInsuranceQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Insurances.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppInsurance> BuildFilter(MgtAppInsuranceQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppInsurance> BuildFilter(MgtappInsuranceQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

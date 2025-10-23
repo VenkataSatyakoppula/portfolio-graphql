@@ -54,7 +54,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappGroup")]
-        public async Task<MgtAppGroup?> UpdateOneMgtAppGroup([GraphQLName("query")] MgtAppGroupQueryInput query, MgtAppGroupSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppGroup?> UpdateOneMgtAppGroup([GraphQLName("query")] MgtappGroupQueryInput query, MgtAppGroupSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -86,7 +86,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappGroup")]
-        public async Task<MgtAppGroup?> DeleteOneMgtAppGroup([GraphQLName("query")] MgtAppGroupQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppGroup?> DeleteOneMgtAppGroup([GraphQLName("query")] MgtappGroupQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && string.IsNullOrWhiteSpace(query.groupname) && query.groupnameQuery == null && (query.clientid == null) && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -98,7 +98,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappGroups")]
-        public async Task<DeleteManyMgtAppGroupsPayload> DeleteManyMgtAppGroups([GraphQLName("query")] MgtAppGroupQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppGroupsPayload> DeleteManyMgtAppGroups([GraphQLName("query")] MgtappGroupQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && string.IsNullOrWhiteSpace(query.groupname) && query.groupnameQuery == null && (query.clientid == null) && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -110,7 +110,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappGroups")]
-        public async Task<UpdateManyMgtAppGroupsPayload> UpdateManyMgtAppGroups([GraphQLName("query")] MgtAppGroupQueryInput query, MgtAppGroupSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppGroupsPayload> UpdateManyMgtAppGroups([GraphQLName("query")] MgtappGroupQueryInput query, MgtAppGroupSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -140,7 +140,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppGroupsPayload { modifiedCount = (int)result.ModifiedCount };
         }
 
-        private static FilterDefinition<MgtAppGroup> BuildFilter(MgtAppGroupQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppGroup> BuildFilter(MgtappGroupQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {
@@ -181,7 +181,7 @@ namespace portfolio_graphql.GraphQL.Mutations
                 if (fq.Count > 0) filters.Add(Builders<MgtAppGroup>.Filter.And(fq));
             }
 
-            // Nested client filters using MgtAppClientQueryInput (renamed to clientid)
+            // Nested client filters using MgtappClientQueryInput (renamed to clientid)
             if (query.clientid != null)
             {
                 var clientFilter = MgtAppClientQuery.BuildFilter(query.clientid);

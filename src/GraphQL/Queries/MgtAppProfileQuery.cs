@@ -17,7 +17,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppProfileQuery
     {
         [GraphQLName("mgtappProfiles")]
-        public async Task<List<MgtAppProfile>> GetMgtAppProfiles([GraphQLName("query")] MgtAppProfileQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppProfile>> GetMgtAppProfiles([GraphQLName("query")] MgtappProfileQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Profiles.Find(filter).ToListAsync();
@@ -25,14 +25,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappProfile")]
-        public async Task<MgtAppProfile?> GetMgtAppProfile([GraphQLName("query")] MgtAppProfileQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppProfile?> GetMgtAppProfile([GraphQLName("query")] MgtappProfileQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Profiles.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        private static FilterDefinition<MgtAppProfile> BuildFilter(MgtAppProfileQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppProfile> BuildFilter(MgtappProfileQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

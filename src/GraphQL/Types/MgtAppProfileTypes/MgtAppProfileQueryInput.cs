@@ -5,12 +5,12 @@ using portfolio_graphql.GraphQL.Types.MgtAppPositionTypes;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppProfileTypes
 {
-    public class MgtAppProfileQueryInput
+    public class MgtappProfileQueryInput
     {
         public string? _id { get; set; }
         // Remove primitive clientid and use nested client object as clientid
-        public MgtAppClientQueryInput? clientid { get; set; }
-        public MgtAppPositionQueryInput? positionid { get; set; }
+        public MgtappClientQueryInput? clientid { get; set; }
+        public MgtappPositionQueryInput? positionid { get; set; }
 
         public string? resume { get; set; }
         public StringQueryInput? resumeQuery { get; set; }
@@ -51,7 +51,7 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppProfileTypes
         public string? profilecomments { get; set; }
         public StringQueryInput? profilecommentsQuery { get; set; }
 
-        public List<MgtAppProfileQueryInput>? and { get; set; }
-        public List<MgtAppProfileQueryInput>? or { get; set; }
+        public List<MgtappProfileQueryInput>? and { get; set; }
+        public List<MgtappProfileQueryInput>? or { get; set; }
     }
 }

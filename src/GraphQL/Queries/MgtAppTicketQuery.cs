@@ -4,6 +4,9 @@ using portfolio_graphql.Services;
 using portfolio_graphql.GraphQL.Types;
 using portfolio_graphql.GraphQL.Types.MgtAppProfileTypes;
 using portfolio_graphql.GraphQL.Types.MgtAppUserTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppPositionTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppGroupTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppClientTypes;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +19,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppTicketQuery
     {
         [GraphQLName("mgtappTickets")]
-        public async Task<List<MgtAppTicket>> GetMgtAppTickets([GraphQLName("query")] MgtAppTicketQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppTicket>> GetMgtAppTickets([GraphQLName("query")] MgtappTicketQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Tickets.Find(filter).ToListAsync();
@@ -24,14 +27,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappTicket")]
-        public async Task<MgtAppTicket?> GetMgtAppTicket([GraphQLName("query")] MgtAppTicketQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppTicket?> GetMgtAppTicket([GraphQLName("query")] MgtappTicketQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Tickets.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppTicket> BuildFilter(MgtAppTicketQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppTicket> BuildFilter(MgtappTicketQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {
@@ -103,6 +106,28 @@ namespace portfolio_graphql.GraphQL.Queries
                 }
             }
 
+            // Nested position filter via PositionQuery BuildFilter
+            if (query.positionid != null)
+            {
+                var positionFilter = MgtAppPositionQuery.BuildFilter(query.positionid, ctx);
+                var positionIds = ctx.Positions.Find(positionFilter).Project(p => p._id).ToList();
+                if (positionIds.Count > 0)
+                {
+                    filters.Add(Builders<MgtAppTicket>.Filter.In(t => t.positionid, positionIds));
+                }
+            }
+
+            // Nested group filter mirrored locally
+            if (query.groupid != null)
+            {
+                var groupFilter = BuildGroupFilter(query.groupid, ctx);
+                var groupIds = ctx.Groups.Find(groupFilter).Project(g => g._id).ToList();
+                if (groupIds.Count > 0)
+                {
+                    filters.Add(Builders<MgtAppTicket>.Filter.In(t => t.groupid, groupIds));
+                }
+            }
+
             if (query.and != null && query.and.Any())
             {
                 var andFilters = query.and.Select(q => BuildFilter(q, ctx)).ToArray();
@@ -128,7 +153,7 @@ namespace portfolio_graphql.GraphQL.Queries
             return Builders<MgtAppTicket>.Filter.And(filters);
         }
 
-        private static FilterDefinition<MgtAppUser> BuildUserFilter(MgtAppUserQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppUser> BuildUserFilter(MgtappUserQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {
@@ -185,6 +210,72 @@ namespace portfolio_graphql.GraphQL.Queries
             }
 
             return Builders<MgtAppUser>.Filter.And(filters);
+        }
+
+        private static FilterDefinition<MgtAppGroup> BuildGroupFilter(MgtappGroupQueryInput? query, MongoDbContext ctx)
+        {
+            if (query == null)
+            {
+                return Builders<MgtAppGroup>.Filter.Empty;
+            }
+
+            var filters = new List<FilterDefinition<MgtAppGroup>>();
+
+            if (!string.IsNullOrWhiteSpace(query._id))
+            {
+                filters.Add(Builders<MgtAppGroup>.Filter.Eq(x => x._id, query._id));
+            }
+            if (!string.IsNullOrWhiteSpace(query.groupname))
+            {
+                filters.Add(Builders<MgtAppGroup>.Filter.Eq(x => x.groupname, query.groupname));
+            }
+
+            if (query.groupnameQuery != null)
+            {
+                var q = query.groupnameQuery;
+                var fq = new List<FilterDefinition<MgtAppGroup>>();
+                if (q.eq != null) fq.Add(Builders<MgtAppGroup>.Filter.Eq(x => x.groupname, q.eq));
+                if (q.ne != null) fq.Add(Builders<MgtAppGroup>.Filter.Ne(x => x.groupname, q.ne));
+                if (q.@in != null && q.@in.Count > 0) fq.Add(Builders<MgtAppGroup>.Filter.In(x => x.groupname, q.@in));
+                if (q.nin != null && q.nin.Count > 0) fq.Add(Builders<MgtAppGroup>.Filter.Nin(x => x.groupname, q.nin));
+                if (q.regex != null)
+                {
+                    var regex = new Regex(q.regex, RegexOptions.IgnoreCase);
+                    fq.Add(Builders<MgtAppGroup>.Filter.Regex(x => x.groupname, new MongoDB.Bson.BsonRegularExpression(regex)));
+                }
+                if (fq.Count > 0) filters.Add(Builders<MgtAppGroup>.Filter.And(fq));
+            }
+
+            if (query.clientid != null)
+            {
+                var clientFilter = MgtAppClientQuery.BuildFilter(query.clientid);
+                var clientIds = ctx.Clients.Find(clientFilter).Project(c => c._id).ToList();
+                filters.Add(Builders<MgtAppGroup>.Filter.In(g => g.clientid, clientIds));
+            }
+
+            if (query.and != null && query.and.Any())
+            {
+                var andFilters = query.and.Select(q => BuildGroupFilter(q, ctx)).ToArray();
+                filters.Add(Builders<MgtAppGroup>.Filter.And(andFilters));
+            }
+
+            if (query.or != null && query.or.Any())
+            {
+                var orFilters = query.or.Select(q => BuildGroupFilter(q, ctx)).ToArray();
+                filters.Add(Builders<MgtAppGroup>.Filter.Or(orFilters));
+            }
+
+            if (!filters.Any())
+            {
+                return Builders<MgtAppGroup>.Filter.Empty;
+            }
+
+            if (filters.Count == 1)
+            {
+                return filters[0];
+            }
+
+            return Builders<MgtAppGroup>.Filter.And(filters);
         }
     }
 }

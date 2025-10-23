@@ -61,7 +61,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappImmigration")]
-        public async Task<MgtAppImmigration?> UpdateOneMgtAppImmigration([GraphQLName("query")] MgtAppImmigrationQueryInput query, MgtAppImmigrationSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppImmigration?> UpdateOneMgtAppImmigration([GraphQLName("query")] MgtappImmigrationQueryInput query, MgtAppImmigrationSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppImmigrationQuery.BuildFilter(query, ctx);
 
@@ -104,7 +104,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappImmigrations")]
-        public async Task<UpdateManyMgtAppImmigrationsPayload> UpdateManyMgtAppImmigrations([GraphQLName("query")] MgtAppImmigrationQueryInput query, MgtAppImmigrationSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppImmigrationsPayload> UpdateManyMgtAppImmigrations([GraphQLName("query")] MgtappImmigrationQueryInput query, MgtAppImmigrationSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppImmigrationQuery.BuildFilter(query, ctx);
 
@@ -146,7 +146,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappImmigration")]
-        public async Task<MgtAppImmigration?> DeleteOneMgtAppImmigration([GraphQLName("query")] MgtAppImmigrationQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppImmigration?> DeleteOneMgtAppImmigration([GraphQLName("query")] MgtappImmigrationQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null
@@ -169,7 +169,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappImmigrations")]
-        public async Task<DeleteManyMgtAppImmigrationsPayload> DeleteManyMgtAppImmigrations([GraphQLName("query")] MgtAppImmigrationQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppImmigrationsPayload> DeleteManyMgtAppImmigrations([GraphQLName("query")] MgtappImmigrationQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null

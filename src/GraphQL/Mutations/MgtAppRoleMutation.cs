@@ -24,7 +24,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappRole")]
-        public async Task<MgtAppRole?> UpdateOneMgtAppRole([GraphQLName("query")] MgtAppRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppRole?> UpdateOneMgtAppRole([GraphQLName("query")] MgtappRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppRole>>();
@@ -43,7 +43,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappRole")]
-        public async Task<MgtAppRole?> DeleteOneMgtAppRole([GraphQLName("query")] MgtAppRoleQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppRole?> DeleteOneMgtAppRole([GraphQLName("query")] MgtappRoleQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && string.IsNullOrWhiteSpace(query.rolename) && query.rolenameQuery == null && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -55,7 +55,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappRoles")]
-        public async Task<DeleteManyMgtAppRolesPayload> DeleteManyMgtAppRoles([GraphQLName("query")] MgtAppRoleQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppRolesPayload> DeleteManyMgtAppRoles([GraphQLName("query")] MgtappRoleQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && string.IsNullOrWhiteSpace(query.rolename) && query.rolenameQuery == null && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -83,7 +83,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappRoles")]
-        public async Task<UpdateManyMgtAppRolesPayload> UpdateManyMgtAppRoles([GraphQLName("query")] MgtAppRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppRolesPayload> UpdateManyMgtAppRoles([GraphQLName("query")] MgtappRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 
@@ -103,7 +103,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppRolesPayload { modifiedCount = (int)result.ModifiedCount };
         }
 
-        private static FilterDefinition<MgtAppRole> BuildFilter(MgtAppRoleQueryInput query)
+        private static FilterDefinition<MgtAppRole> BuildFilter(MgtappRoleQueryInput query)
         {
             var filters = new List<FilterDefinition<MgtAppRole>>();
             if (!string.IsNullOrWhiteSpace(query._id))

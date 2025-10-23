@@ -15,7 +15,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppRoleQuery
     {
         [GraphQLName("mgtappRoles")]
-        public async Task<List<MgtAppRole>> GetMgtAppRoles([GraphQLName("query")] MgtAppRoleQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppRole>> GetMgtAppRoles([GraphQLName("query")] MgtappRoleQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var result = await ctx.Roles.Find(filter).ToListAsync();
@@ -23,14 +23,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappRole")]
-        public async Task<MgtAppRole?> GetMgtAppRole([GraphQLName("query")] MgtAppRoleQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppRole?> GetMgtAppRole([GraphQLName("query")] MgtappRoleQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var result = await ctx.Roles.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        private static FilterDefinition<MgtAppRole> BuildFilter(MgtAppRoleQueryInput? query)
+        private static FilterDefinition<MgtAppRole> BuildFilter(MgtappRoleQueryInput? query)
         {
             if (query == null)
             {

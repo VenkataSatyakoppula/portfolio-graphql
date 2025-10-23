@@ -61,7 +61,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappInsurance")]
-        public async Task<MgtAppInsurance?> UpdateOneMgtAppInsurance([GraphQLName("query")] MgtAppInsuranceQueryInput query, MgtAppInsuranceSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppInsurance?> UpdateOneMgtAppInsurance([GraphQLName("query")] MgtappInsuranceQueryInput query, MgtAppInsuranceSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppInsuranceQuery.BuildFilter(query, ctx);
 
@@ -104,7 +104,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappInsurances")]
-        public async Task<UpdateManyMgtAppInsurancesPayload> UpdateManyMgtAppInsurances([GraphQLName("query")] MgtAppInsuranceQueryInput query, MgtAppInsuranceSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppInsurancesPayload> UpdateManyMgtAppInsurances([GraphQLName("query")] MgtappInsuranceQueryInput query, MgtAppInsuranceSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppInsuranceQuery.BuildFilter(query, ctx);
 
@@ -146,7 +146,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappInsurance")]
-        public async Task<MgtAppInsurance?> DeleteOneMgtAppInsurance([GraphQLName("query")] MgtAppInsuranceQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppInsurance?> DeleteOneMgtAppInsurance([GraphQLName("query")] MgtappInsuranceQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null
@@ -169,7 +169,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappInsurances")]
-        public async Task<DeleteManyMgtAppInsurancesPayload> DeleteManyMgtAppInsurances([GraphQLName("query")] MgtAppInsuranceQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppInsurancesPayload> DeleteManyMgtAppInsurances([GraphQLName("query")] MgtappInsuranceQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null

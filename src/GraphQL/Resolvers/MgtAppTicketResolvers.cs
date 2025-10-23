@@ -29,5 +29,19 @@ namespace portfolio_graphql.GraphQL.Resolvers
             var loader = context.DataLoader<UserByIdDataLoader>();
             return await loader.LoadAsync(ticket.ticketassignedto, cancellationToken);
         }
+
+        public async Task<MgtAppPosition?> GetPosition([Parent] MgtAppTicket ticket, IResolverContext context, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(ticket.positionid)) return null;
+            var loader = context.DataLoader<PositionByIdDataLoader>();
+            return await loader.LoadAsync(ticket.positionid, cancellationToken);
+        }
+
+        public async Task<MgtAppGroup?> GetGroup([Parent] MgtAppTicket ticket, IResolverContext context, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(ticket.groupid)) return null;
+            var loader = context.DataLoader<GroupByIdDataLoader>();
+            return await loader.LoadAsync(ticket.groupid, cancellationToken);
+        }
     }
 }

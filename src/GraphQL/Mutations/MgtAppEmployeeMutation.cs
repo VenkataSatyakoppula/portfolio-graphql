@@ -96,7 +96,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappEmployee")]
-        public async Task<MgtAppEmployee?> UpdateOneMgtAppEmployee([GraphQLName("query")] MgtAppEmployeeQueryInput query, MgtAppEmployeeSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppEmployee?> UpdateOneMgtAppEmployee([GraphQLName("query")] MgtappEmployeeQueryInput query, MgtAppEmployeeSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppEmployeeQuery.BuildFilter(query, ctx);
 
@@ -162,7 +162,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappEmployee")]
-        public async Task<MgtAppEmployee?> DeleteOneMgtAppEmployee([GraphQLName("query")] MgtAppEmployeeQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppEmployee?> DeleteOneMgtAppEmployee([GraphQLName("query")] MgtappEmployeeQueryInput query, [Service] MongoDbContext ctx)
         {
             // Require some filter criteria to avoid deleting arbitrary documents
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
@@ -187,7 +187,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappEmployees")]
-        public async Task<DeleteManyMgtAppEmployeesPayload> DeleteManyMgtAppEmployees([GraphQLName("query")] MgtAppEmployeeQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppEmployeesPayload> DeleteManyMgtAppEmployees([GraphQLName("query")] MgtappEmployeeQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null
@@ -211,7 +211,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappEmployees")]
-        public async Task<UpdateManyMgtAppEmployeesPayload> UpdateManyMgtAppEmployees([GraphQLName("query")] MgtAppEmployeeQueryInput query, MgtAppEmployeeSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppEmployeesPayload> UpdateManyMgtAppEmployees([GraphQLName("query")] MgtappEmployeeQueryInput query, MgtAppEmployeeSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppEmployeeQuery.BuildFilter(query, ctx);
 

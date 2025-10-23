@@ -63,7 +63,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappBankDetail")]
-        public async Task<MgtAppBankDetails?> UpdateOneMgtAppBankDetail([GraphQLName("query")] MgtAppBankDetailsQueryInput query, MgtAppBankDetailsSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppBankDetails?> UpdateOneMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, MgtAppBankDetailsSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppBankDetailsQuery.BuildFilter(query, ctx);
 
@@ -107,7 +107,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappBankDetails")]
-        public async Task<UpdateManyMgtAppBankDetailsPayload> UpdateManyMgtAppBankDetails([GraphQLName("query")] MgtAppBankDetailsQueryInput query, MgtAppBankDetailsSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppBankDetailsPayload> UpdateManyMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput query, MgtAppBankDetailsSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppBankDetailsQuery.BuildFilter(query, ctx);
 
@@ -149,7 +149,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppBankDetailsPayload { modifiedCount = (int)result.ModifiedCount };
         }
         [GraphQLName("deleteOneMgtappBankDetail")]
-        public async Task<MgtAppBankDetails?> DeleteOneMgtAppBankDetail([GraphQLName("query")] MgtAppBankDetailsQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppBankDetails?> DeleteOneMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null
@@ -174,7 +174,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappBankDetails")]
-        public async Task<DeleteManyMgtAppBankDetailsPayload> DeleteManyMgtAppBankDetails([GraphQLName("query")] MgtAppBankDetailsQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppBankDetailsPayload> DeleteManyMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
                 || query.clientid != null

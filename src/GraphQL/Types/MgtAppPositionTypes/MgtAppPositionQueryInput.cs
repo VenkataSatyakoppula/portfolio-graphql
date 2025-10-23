@@ -4,11 +4,10 @@ using portfolio_graphql.GraphQL.Types.MgtAppClientTypes;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppPositionTypes
 {
-    public class MgtAppPositionQueryInput
+    public class MgtappPositionQueryInput
     {
         public string? _id { get; set; }
-        // Rename nested client to clientid and remove primitive clientid
-        public MgtAppClientQueryInput? clientid { get; set; }
+        public MgtappClientQueryInput? clientid { get; set; }
         public string? groupid { get; set; }
         public string? jobtitle { get; set; }
         public StringQueryInput? jobtitleQuery { get; set; }
@@ -20,7 +19,7 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppPositionTypes
         public StringQueryInput? billingrateQuery { get; set; }
         public string? status { get; set; }
         public StringQueryInput? statusQuery { get; set; }
-        public List<MgtAppPositionQueryInput>? and { get; set; }
-        public List<MgtAppPositionQueryInput>? or { get; set; }
+        public List<MgtappPositionQueryInput>? and { get; set; }
+        public List<MgtappPositionQueryInput>? or { get; set; }
     }
 }

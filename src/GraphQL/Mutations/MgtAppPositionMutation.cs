@@ -72,7 +72,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappPosition")]
-        public async Task<MgtAppPosition?> UpdateOneMgtAppPosition([GraphQLName("query")] MgtAppPositionQueryInput query, MgtAppPositionSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppPosition?> UpdateOneMgtAppPosition([GraphQLName("query")] MgtappPositionQueryInput query, MgtAppPositionSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -115,7 +115,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteOneMgtappPosition")]
-        public async Task<MgtAppPosition?> DeleteOneMgtAppPosition([GraphQLName("query")] MgtAppPositionQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppPosition?> DeleteOneMgtAppPosition([GraphQLName("query")] MgtappPositionQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && (query.groupid == null) && string.IsNullOrWhiteSpace(query.jobtitle) && string.IsNullOrWhiteSpace(query.experience) && string.IsNullOrWhiteSpace(query.skillset) && string.IsNullOrWhiteSpace(query.billingrate) && string.IsNullOrWhiteSpace(query.status) && query.jobtitleQuery == null && query.experienceQuery == null && query.skillsetQuery == null && query.statusQuery == null && (query.clientid == null) && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -127,7 +127,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("deleteManyMgtappPositions")]
-        public async Task<DeleteManyMgtAppPositionsPayload> DeleteManyMgtAppPositions([GraphQLName("query")] MgtAppPositionQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<DeleteManyMgtAppPositionsPayload> DeleteManyMgtAppPositions([GraphQLName("query")] MgtappPositionQueryInput query, [Service] MongoDbContext ctx)
         {
             if (string.IsNullOrWhiteSpace(query._id) && (query.groupid == null) && string.IsNullOrWhiteSpace(query.jobtitle) && string.IsNullOrWhiteSpace(query.experience) && string.IsNullOrWhiteSpace(query.skillset) && string.IsNullOrWhiteSpace(query.billingrate) && string.IsNullOrWhiteSpace(query.status) && query.jobtitleQuery == null && query.experienceQuery == null && query.skillsetQuery == null && query.statusQuery == null && (query.clientid == null) && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
             {
@@ -139,7 +139,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappPositions")]
-        public async Task<UpdateManyMgtAppPositionsPayload> UpdateManyMgtAppPositions([GraphQLName("query")] MgtAppPositionQueryInput query, MgtAppPositionSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppPositionsPayload> UpdateManyMgtAppPositions([GraphQLName("query")] MgtappPositionQueryInput query, MgtAppPositionSetInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -180,7 +180,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppPositionsPayload { modifiedCount = (int)result.ModifiedCount };
         }
 
-        private static FilterDefinition<MgtAppPosition> BuildFilter(MgtAppPositionQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppPosition> BuildFilter(MgtappPositionQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

@@ -14,19 +14,19 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppTimesheetsTypes
         public StringQueryInput? timesheetdateQuery { get; set; }
     }
 
-    public class MgtAppTimesheetsQueryInput
+    public class MgtappTimesheetsQueryInput
     {
         public string? _id { get; set; }
 
         public string? timesheetmonth { get; set; }
         public StringQueryInput? timesheetmonthQuery { get; set; }
 
-        public MgtAppClientQueryInput? clientid { get; set; }
-        public MgtAppEmployeeQueryInput? employeeid { get; set; }
+        public MgtappClientQueryInput? clientid { get; set; }
+        public MgtappEmployeeQueryInput? employeeid { get; set; }
 
         public TimesheetInfoQueryInput? timesheetinfo { get; set; }
 
-        public List<MgtAppTimesheetsQueryInput>? and { get; set; }
-        public List<MgtAppTimesheetsQueryInput>? or { get; set; }
+        public List<MgtappTimesheetsQueryInput>? and { get; set; }
+        public List<MgtappTimesheetsQueryInput>? or { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppTimesheetsQuery
     {
         [GraphQLName("mgtappTimesheets")]
-        public async Task<List<MgtAppTimesheets>> GetMgtAppTimesheets([GraphQLName("query")] MgtAppTimesheetsQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppTimesheets>> GetMgtAppTimesheets([GraphQLName("query")] MgtappTimesheetsQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Timesheets.Find(filter).ToListAsync();
@@ -26,14 +26,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappTimesheet")]
-        public async Task<MgtAppTimesheets?> GetMgtAppTimesheet([GraphQLName("query")] MgtAppTimesheetsQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppTimesheets?> GetMgtAppTimesheet([GraphQLName("query")] MgtappTimesheetsQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Timesheets.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppTimesheets> BuildFilter(MgtAppTimesheetsQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppTimesheets> BuildFilter(MgtappTimesheetsQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {

@@ -16,7 +16,7 @@ namespace portfolio_graphql.GraphQL.Queries
     public class MgtAppPositionQuery
     {
         [GraphQLName("mgtappPositions")]
-        public async Task<List<MgtAppPosition>> GetMgtAppPositions([GraphQLName("query")] MgtAppPositionQueryInput? query, [Service] MongoDbContext ctx)
+        public async Task<List<MgtAppPosition>> GetMgtAppPositions([GraphQLName("query")] MgtappPositionQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Positions.Find(filter).ToListAsync();
@@ -24,14 +24,14 @@ namespace portfolio_graphql.GraphQL.Queries
         }
 
         [GraphQLName("mgtappPosition")]
-        public async Task<MgtAppPosition?> GetMgtAppPosition([GraphQLName("query")] MgtAppPositionQueryInput query, [Service] MongoDbContext ctx)
+        public async Task<MgtAppPosition?> GetMgtAppPosition([GraphQLName("query")] MgtappPositionQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
             var result = await ctx.Positions.Find(filter).FirstOrDefaultAsync();
             return result;
         }
 
-        public static FilterDefinition<MgtAppPosition> BuildFilter(MgtAppPositionQueryInput? query, MongoDbContext ctx)
+        public static FilterDefinition<MgtAppPosition> BuildFilter(MgtappPositionQueryInput? query, MongoDbContext ctx)
         {
             if (query == null)
             {
