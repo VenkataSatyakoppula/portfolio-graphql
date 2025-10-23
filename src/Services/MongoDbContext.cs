@@ -21,6 +21,27 @@ namespace portfolio_graphql.Services
         public IMongoCollection<MgtAppProfile> Profiles => _database.GetCollection<MgtAppProfile>("mgtapp-profile");
         public IMongoCollection<MgtAppEmployee> Employees => _database.GetCollection<MgtAppEmployee>("mgtapp-employee");
         public IMongoCollection<MgtAppBankDetails> BankDetails => _database.GetCollection<MgtAppBankDetails>("mgtapp-bankdetails");
+        public IMongoCollection<MgtAppImmigration> Immigrations => _database.GetCollection<MgtAppImmigration>("mgtapp-immigration");
+        public IMongoCollection<MgtAppInsurance> Insurances => _database.GetCollection<MgtAppInsurance>("mgtapp-insurance");
+        public IMongoCollection<MgtAppTimesheets> Timesheets => _database.GetCollection<MgtAppTimesheets>("mgtapp-timesheets");
+        public IMongoCollection<MgtAppTicket> Tickets => _database.GetCollection<MgtAppTicket>("mgtapp-tickets");
+
+        // Create common indexes for tickets used by filters to avoid collection scans
+        public void EnsureTicketIndexes()
+        {
+            var keys = Builders<MgtAppTicket>.IndexKeys;
+            var models = new List<CreateIndexModel<MgtAppTicket>>
+            {
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.ticketstatus)),
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.tickettype)),
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.timesheetweek)),
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.ticketcreateddate)),
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.profileid)),
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.ticketcreatedby)),
+                new CreateIndexModel<MgtAppTicket>(keys.Ascending(x => x.ticketassignedto))
+            };
+            Tickets.Indexes.CreateMany(models);
+        }
     }
 }
 

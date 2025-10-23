@@ -11,6 +11,10 @@ using portfolio_graphql.GraphQL.Types.MgtAppGroupTypes;
 using portfolio_graphql.GraphQL.Types.MgtAppProfileTypes;
 using portfolio_graphql.GraphQL.Types.MgtAppEmployeeTypes;
 using portfolio_graphql.GraphQL.Types.MgtAppBankDetailsTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppImmigrationTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppInsuranceTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppTimesheetsTypes;
+using portfolio_graphql.GraphQL.Types;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +26,7 @@ builder.Services
     .AddGraphQLServer()
     .AddQueryType(d => d.Name("Query"))
     .AddMutationType(d => d.Name("Mutation"))
+    .InitializeOnStartup()
     .AddTypeExtension<MgtAppClientQuery>()
     .AddTypeExtension<MgtAppRoleQuery>()
     .AddTypeExtension<MgtAppUserQuery>()
@@ -30,6 +35,9 @@ builder.Services
     .AddTypeExtension<MgtAppProfileQuery>()
     .AddTypeExtension<MgtAppEmployeeQuery>()
     .AddTypeExtension<MgtAppBankDetailsQuery>()
+    .AddTypeExtension<MgtAppImmigrationQuery>()
+    .AddTypeExtension<MgtAppInsuranceQuery>()
+    .AddTypeExtension<MgtAppTimesheetsQuery>()
     .AddTypeExtension<MgtAppClientMutation>()
     .AddTypeExtension<MgtAppRoleMutation>()
     .AddTypeExtension<MgtAppUserMutation>()
@@ -38,6 +46,10 @@ builder.Services
     .AddTypeExtension<MgtAppProfileMutation>()
     .AddTypeExtension<MgtAppEmployeeMutation>()
     .AddTypeExtension<MgtAppBankDetailsMutation>()
+    .AddTypeExtension<MgtAppImmigrationMutation>()
+    .AddTypeExtension<MgtAppInsuranceMutation>()
+    .AddTypeExtension<MgtAppTimesheetsMutation>()
+    .AddTypeExtension<MgtAppTicketMutation>()
     .AddType<MgtAppClientType>()
     .AddType<MgtAppRoleType>()
     .AddType<MgtAppUserType>()
@@ -46,14 +58,29 @@ builder.Services
     .AddType<MgtAppProfileType>()
     .AddType<MgtAppEmployeeType>()
     .AddType<MgtAppBankDetailsType>()
+    .AddType<MgtAppImmigrationType>()
+    .AddType<MgtAppInsuranceType>()
+    .AddType<MgtAppTimesheetsType>()
+    .AddType<MgtAppTicketType>()
+    .AddTypeExtension<MgtAppTicketQuery>()
     .AddDataLoader<ClientByIdDataLoader>()
     .AddDataLoader<RoleByIdDataLoader>()
     .AddDataLoader<GroupByIdDataLoader>()
     .AddDataLoader<PositionByIdDataLoader>()
     .AddDataLoader<UserByIdDataLoader>()
-    .AddDataLoader<EmployeeByIdDataLoader>();
+    .AddDataLoader<EmployeeByIdDataLoader>()
+    .AddDataLoader<ProfileByIdDataLoader>();
 
 var app = builder.Build();
+
+// Warm up Mongo connection and ensure indexes to avoid first-request latency
+using (var scope = app.Services.CreateScope())
+{
+    var ctx = scope.ServiceProvider.GetRequiredService<MongoDbContext>();
+    // Ping via a lightweight count and ensure common indexes
+    ctx.Tickets.EstimatedDocumentCount();
+    ctx.EnsureTicketIndexes();
+}
 
 app.MapGraphQL("/api/v1/graphql");
 
