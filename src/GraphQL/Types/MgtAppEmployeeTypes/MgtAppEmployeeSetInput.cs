@@ -2,11 +2,12 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppEmployeeTypes
 {
-    public class MgtAppEmployeeSetInput
+    public class MgtappEmployeeUpdateInput
     {
         public LinkIdInput? clientid { get; set; }
         public LinkIdInput? employeeuserid { get; set; }
         public LinkIdInput? employeemanagerid { get; set; }
+        public bool? employeemanagerid_unset { get; set; }
 
         public string? employeephone { get; set; }
         public string? employeefirstname { get; set; }

@@ -33,19 +33,19 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppPositionMutation
     {
         [GraphQLName("insertOneMgtappPosition")]
-        public async Task<MgtAppPosition> InsertOneMgtAppPosition(MgtAppPositionInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppPosition> InsertOneMgtAppPosition(MgtappPositionInsertInput data, [Service] MongoDbContext ctx)
         {
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
             // groupid is optional — validate only if provided
-            if (input.groupid != null && string.IsNullOrWhiteSpace(input.groupid.link))
+            if (data.groupid != null && string.IsNullOrWhiteSpace(data.groupid.link))
             {
                 throw new GraphQLException("groupid.link is required when provided.");
             }
 
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
 
             var doc = new MgtAppPosition
@@ -53,16 +53,16 @@ namespace portfolio_graphql.GraphQL.Mutations
                 _id = ObjectId.GenerateNewId().ToString(),
                 clientid = client._id,
                 groupid = null,
-                jobtitle = input.jobtitle,
-                experience = input.experience,
-                skillset = input.skillset,
-                billingrate = input.billingrate,
-                status = input.status
+                jobtitle = data.jobtitle,
+                experience = data.experience,
+                skillset = data.skillset,
+                billingrate = data.billingrate,
+                status = data.status
             };
 
-            if (input.groupid != null)
+            if (data.groupid != null)
             {
-                var group = await ctx.Groups.Find(Builders<MgtAppGroup>.Filter.Eq(x => x._id, input.groupid.link)).FirstOrDefaultAsync();
+                var group = await ctx.Groups.Find(Builders<MgtAppGroup>.Filter.Eq(x => x._id, data.groupid.link)).FirstOrDefaultAsync();
                 if (group == null) throw new GraphQLException("Invalid groupid.link: group not found.");
                 doc.groupid = group._id;
             }
@@ -72,7 +72,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappPosition")]
-        public async Task<MgtAppPosition?> UpdateOneMgtAppPosition([GraphQLName("query")] MgtappPositionQueryInput query, MgtAppPositionSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppPosition?> UpdateOneMgtAppPosition([GraphQLName("query")] MgtappPositionQueryInput query, MgtappPositionUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -87,7 +87,12 @@ namespace portfolio_graphql.GraphQL.Mutations
                 if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
                 updates.Add(Builders<MgtAppPosition>.Update.Set(x => x.clientid, client._id));
             }
-            if (set.groupid != null)
+            // Support unsetting or linking groupid
+            if (set.groupid_unset == true)
+            {
+                updates.Add(Builders<MgtAppPosition>.Update.Unset(x => x.groupid));
+            }
+            else if (set.groupid != null)
             {
                 if (string.IsNullOrWhiteSpace(set.groupid.link))
                 {
@@ -139,7 +144,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappPositions")]
-        public async Task<UpdateManyMgtAppPositionsPayload> UpdateManyMgtAppPositions([GraphQLName("query")] MgtappPositionQueryInput query, MgtAppPositionSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppPositionsPayload> UpdateManyMgtAppPositions([GraphQLName("query")] MgtappPositionQueryInput query, MgtappPositionUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -218,11 +223,6 @@ namespace portfolio_graphql.GraphQL.Mutations
             {
                 filters.Add(Builders<MgtAppPosition>.Filter.Eq(x => x.status, query.status));
             }
-            // Remove primitive clientid filter per new input shape
-            // if (!string.IsNullOrWhiteSpace(query.clientid))
-            // {
-            //     filters.Add(Builders<MgtAppPosition>.Filter.Eq(x => x.clientid, query.clientid));
-            // }
 
             // Apply StringQueryInputs for strings
             // Removed _idQuery block to align with MgtAppPositionQueryInput which does not define _idQuery

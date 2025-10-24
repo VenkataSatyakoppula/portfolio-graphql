@@ -1,6 +1,6 @@
 namespace portfolio_graphql.GraphQL.Types.MgtAppRoleTypes
 {
-    public class MgtAppRoleInsertInput
+    public class MgtappRoleInsertInput
     {
         public string rolename { get; set; } = string.Empty;
     }

@@ -8,6 +8,8 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppProfileTypes
     public class MgtappProfileQueryInput
     {
         public string? _id { get; set; }
+        // Add support for filtering by multiple IDs
+        public List<string>? _id_in { get; set; }
         // Remove primitive clientid and use nested client object as clientid
         public MgtappClientQueryInput? clientid { get; set; }
         public MgtappPositionQueryInput? positionid { get; set; }

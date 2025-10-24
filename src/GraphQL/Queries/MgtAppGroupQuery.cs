@@ -49,11 +49,6 @@ namespace portfolio_graphql.GraphQL.Queries
             {
                 filters.Add(Builders<MgtAppGroup>.Filter.Eq(x => x.groupname, query.groupname));
             }
-            // Remove primitive clientid filter per new input shape
-            // if (!string.IsNullOrWhiteSpace(query.clientid))
-            // {
-            //     filters.Add(Builders<MgtAppGroup>.Filter.Eq(x => x.clientid, query.clientid));
-            // }
 
             // StringQueryInput for groupname
             if (query.groupnameQuery != null)

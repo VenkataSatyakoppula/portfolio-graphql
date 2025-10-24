@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using portfolio_graphql.GraphQL.Types;
 using portfolio_graphql.GraphQL.Types.MgtAppClientTypes;
+using portfolio_graphql.GraphQL.Types.MgtAppRoleTypes;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppUserTypes
 {
@@ -13,6 +14,7 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppUserTypes
         public StringQueryInput? usernameQuery { get; set; }
         public StringQueryInput? useremailQuery { get; set; }
         public MgtappClientQueryInput? clientid { get; set; } // nested client object query
+        public MgtappRoleQueryInput? roleid { get; set; } // nested role object query
         public List<MgtappUserQueryInput>? and { get; set; }
         public List<MgtappUserQueryInput>? or { get; set; }
     }

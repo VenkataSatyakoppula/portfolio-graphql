@@ -2,7 +2,7 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppInsuranceTypes
 {
-    public class MgtAppInsuranceInsertInput
+    public class MgtappInsuranceInsertInput
     {
         public LinkIdInput clientid { get; set; } = new LinkIdInput();
         public LinkIdInput employeeid { get; set; } = new LinkIdInput();

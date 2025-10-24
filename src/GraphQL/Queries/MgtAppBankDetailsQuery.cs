@@ -17,7 +17,7 @@ namespace portfolio_graphql.GraphQL.Queries
     [ExtendObjectType("Query")]
     public class MgtAppBankDetailsQuery
     {
-        [GraphQLName("mgtappBankDetails")]
+        [GraphQLName("mgtappBankdetails")]
         public async Task<List<MgtAppBankDetails>> GetMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput? query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
@@ -25,7 +25,7 @@ namespace portfolio_graphql.GraphQL.Queries
             return result;
         }
 
-        [GraphQLName("mgtappBankDetail")]
+        [GraphQLName("mgtappBankdetail")]
         public async Task<MgtAppBankDetails?> GetMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);

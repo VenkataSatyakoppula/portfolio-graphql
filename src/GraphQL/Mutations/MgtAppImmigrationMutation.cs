@@ -31,20 +31,20 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppImmigrationMutation
     {
         [GraphQLName("insertOneMgtappImmigration")]
-        public async Task<MgtAppImmigration> InsertOneMgtAppImmigration(MgtAppImmigrationInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppImmigration> InsertOneMgtAppImmigration(MgtappImmigrationInsertInput data, [Service] MongoDbContext ctx)
         {
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
 
-            if (input.employeeid == null || string.IsNullOrWhiteSpace(input.employeeid.link))
+            if (data.employeeid == null || string.IsNullOrWhiteSpace(data.employeeid.link))
             {
                 throw new GraphQLException("employeeid.link is required.");
             }
-            var employee = await ctx.Employees.Find(Builders<MgtAppEmployee>.Filter.Eq(x => x._id, input.employeeid.link)).FirstOrDefaultAsync();
+            var employee = await ctx.Employees.Find(Builders<MgtAppEmployee>.Filter.Eq(x => x._id, data.employeeid.link)).FirstOrDefaultAsync();
             if (employee == null) throw new GraphQLException("Invalid employeeid.link: employee not found.");
 
             var doc = new MgtAppImmigration
@@ -52,8 +52,8 @@ namespace portfolio_graphql.GraphQL.Mutations
                 _id = ObjectId.GenerateNewId().ToString(),
                 clientid = client._id,
                 employeeid = employee._id,
-                immigrationstatus = input.immigrationstatus ?? string.Empty,
-                immigrationsubstatus = input.immigrationsubstatus ?? string.Empty
+                immigrationstatus = data.immigrationstatus ?? string.Empty,
+                immigrationsubstatus = data.immigrationsubstatus ?? string.Empty
             };
 
             await ctx.Immigrations.InsertOneAsync(doc);
@@ -61,7 +61,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappImmigration")]
-        public async Task<MgtAppImmigration?> UpdateOneMgtAppImmigration([GraphQLName("query")] MgtappImmigrationQueryInput query, MgtAppImmigrationSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppImmigration?> UpdateOneMgtAppImmigration([GraphQLName("query")] MgtappImmigrationQueryInput query, MgtappImmigrationUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppImmigrationQuery.BuildFilter(query, ctx);
 
@@ -104,7 +104,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappImmigrations")]
-        public async Task<UpdateManyMgtAppImmigrationsPayload> UpdateManyMgtAppImmigrations([GraphQLName("query")] MgtappImmigrationQueryInput query, MgtAppImmigrationSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppImmigrationsPayload> UpdateManyMgtAppImmigrations([GraphQLName("query")] MgtappImmigrationQueryInput query, MgtappImmigrationUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppImmigrationQuery.BuildFilter(query, ctx);
 

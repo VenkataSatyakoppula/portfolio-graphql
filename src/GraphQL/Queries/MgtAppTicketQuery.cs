@@ -71,13 +71,17 @@ namespace portfolio_graphql.GraphQL.Queries
                 filters.Add(Builders<MgtAppTicket>.Filter.Eq(x => x.ticketcategory, query.ticketcategory));
             }
 
-            // Nested profile filter (limited to _id support to avoid duplicating full profile filters)
+            // Nested profile filter: support single _id and list _id_in
             if (query.profileid != null)
             {
                 var profileIds = new List<string>();
                 if (!string.IsNullOrWhiteSpace(query.profileid._id))
                 {
                     profileIds.Add(query.profileid._id);
+                }
+                if (query.profileid._id_in != null && query.profileid._id_in.Count > 0)
+                {
+                    profileIds.AddRange(query.profileid._id_in.Where(id => !string.IsNullOrWhiteSpace(id)));
                 }
                 if (profileIds.Count > 0)
                 {
@@ -153,7 +157,7 @@ namespace portfolio_graphql.GraphQL.Queries
             return Builders<MgtAppTicket>.Filter.And(filters);
         }
 
-        private static FilterDefinition<MgtAppUser> BuildUserFilter(MgtappUserQueryInput? query, MongoDbContext ctx)
+        private static FilterDefinition<MgtAppUser> BuildUserFilter(MgtappUserQueryInput query, MongoDbContext ctx)
         {
             if (query == null)
             {

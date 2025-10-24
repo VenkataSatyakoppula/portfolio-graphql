@@ -2,7 +2,7 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppEmployeeTypes
 {
-    public class MgtAppEmployeeInsertInput
+    public class MgtappEmployeeInsertInput
     {
         public LinkIdInput clientid { get; set; } = new LinkIdInput();
         public LinkIdInput? employeeuserid { get; set; }

@@ -13,18 +13,19 @@ namespace portfolio_graphql.GraphQL.Mutations
     [ExtendObjectType(OperationTypeNames.Mutation)]
     public class MgtAppTimesheetsMutation
     {
+        [GraphQLName("insertOneMgtappTimesheet")]
         public async Task<MgtAppTimesheets?> InsertOneMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
-            MgtAppTimesheetsInsertInput input)
+            MgtappTimesheetInsertInput data)
         {
             var collection = dbContext.Timesheets;
             var doc = new MgtAppTimesheets
             {
                 _id = ObjectId.GenerateNewId().ToString(),
-                timesheetmonth = input.timesheetmonth,
-                clientid = input.clientid?.link,
-                employeeid = input.employeeid?.link,
-                timesheetinfo = input.timesheetinfo?.Select(i => new TimesheetInfo
+                timesheetmonth = data.timesheetmonth,
+                clientid = data.clientid?.link,
+                employeeid = data.employeeid?.link,
+                timesheetinfo = data.timesheetinfo?.Select(i => new TimesheetInfo
                 {
                     timesheetdate = i.timesheetdate,
                     timesheethours = i.timesheethours
@@ -34,11 +35,11 @@ namespace portfolio_graphql.GraphQL.Mutations
             return doc;
         }
 
-        [GraphQLName("updateOneMgtappTimesheets")]
+        [GraphQLName("updateOneMgtappTimesheet")]
         public async Task<MgtAppTimesheets?> UpdateOneMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
             MgtappTimesheetsQueryInput query,
-            MgtAppTimesheetsSetInput set)
+            MgtappTimesheetUpdateInput set)
          {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
@@ -67,7 +68,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         public async Task<long> UpdateManyMgtAppTimesheets(
             [Service] MongoDbContext dbContext,
             MgtappTimesheetsQueryInput query,
-            MgtAppTimesheetsSetInput set)
+            MgtappTimesheetUpdateInput set)
          {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
@@ -93,7 +94,19 @@ namespace portfolio_graphql.GraphQL.Mutations
             return result.ModifiedCount;
          }
 
-        public async Task<MgtAppTimesheets?> DeleteOneMgtAppTimesheets(
+        [GraphQLName("deleteManyMgtappTimesheets")]
+        public async Task<DeleteManyMgtAppTimesheetsPayload> DeleteManyMgtAppTimesheets(
+            [Service] MongoDbContext dbContext,
+            MgtappTimesheetsQueryInput query)
+        {
+            var collection = dbContext.Timesheets;
+            var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
+            var result = await collection.DeleteManyAsync(filter);
+            return new DeleteManyMgtAppTimesheetsPayload { deletedCount = (int)result.DeletedCount };
+        }
+
+        [GraphQLName("deleteOneMgtappTimesheet")]
+        public async Task<MgtAppTimesheets?> DeleteOneMgtAppTimesheet(
             [Service] MongoDbContext dbContext,
             MgtappTimesheetsQueryInput query)
         {
@@ -102,14 +115,55 @@ namespace portfolio_graphql.GraphQL.Mutations
             return await collection.FindOneAndDeleteAsync(filter);
         }
 
-        public async Task<long> DeleteManyMgtAppTimesheets(
+        [GraphQLName("upsertOneMgtappTimesheet")]
+        public async Task<MgtAppTimesheets?> UpsertOneMgtAppTimesheet(
             [Service] MongoDbContext dbContext,
-            MgtappTimesheetsQueryInput query)
+            MgtappTimesheetsQueryInput query,
+            MgtappTimesheetInsertInput data)
         {
             var collection = dbContext.Timesheets;
             var filter = portfolio_graphql.GraphQL.Queries.MgtAppTimesheetsQuery.BuildFilter(query, dbContext);
-            var result = await collection.DeleteManyAsync(filter);
-            return result.DeletedCount;
+            var existing = await collection.Find(filter).FirstOrDefaultAsync();
+
+            if (existing != null)
+            {
+                var updates = new List<UpdateDefinition<MgtAppTimesheets>>();
+                if (data.timesheetmonth != null) updates.Add(Builders<MgtAppTimesheets>.Update.Set(x => x.timesheetmonth, data.timesheetmonth));
+                if (data.clientid != null) updates.Add(Builders<MgtAppTimesheets>.Update.Set(x => x.clientid, data.clientid.link));
+                if (data.employeeid != null) updates.Add(Builders<MgtAppTimesheets>.Update.Set(x => x.employeeid, data.employeeid.link));
+                if (data.timesheetinfo != null)
+                {
+                    var list = data.timesheetinfo.Select(i => new TimesheetInfo
+                    {
+                        timesheetdate = i.timesheetdate,
+                        timesheethours = i.timesheethours
+                    }).ToList();
+                    updates.Add(Builders<MgtAppTimesheets>.Update.Set(x => x.timesheetinfo, list));
+                }
+                if (updates.Count == 0) return existing;
+                var update = Builders<MgtAppTimesheets>.Update.Combine(updates);
+                return await collection.FindOneAndUpdateAsync(
+                    Builders<MgtAppTimesheets>.Filter.Eq(x => x._id, existing._id),
+                    update,
+                    new FindOneAndUpdateOptions<MgtAppTimesheets> { ReturnDocument = ReturnDocument.After });
+            }
+            else
+            {
+                var doc = new MgtAppTimesheets
+                {
+                    _id = ObjectId.GenerateNewId().ToString(),
+                    timesheetmonth = data.timesheetmonth,
+                    clientid = data.clientid?.link,
+                    employeeid = data.employeeid?.link,
+                    timesheetinfo = data.timesheetinfo?.Select(i => new TimesheetInfo
+                    {
+                        timesheetdate = i.timesheetdate,
+                        timesheethours = i.timesheethours
+                    }).ToList()
+                };
+                await collection.InsertOneAsync(doc);
+                return doc;
+            }
         }
     }
 }

@@ -1,14 +1,16 @@
 using portfolio_graphql.GraphQL.Types;
+using HotChocolate;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppTimesheetsTypes
 {
+    [GraphQLName("MgtappTimesheetTimesheetinfoUpdateInput")]
     public class TimesheetInfoSetInput
     {
         public string? timesheetdate { get; set; }
         public string? timesheethours { get; set; }
     }
 
-    public class MgtAppTimesheetsSetInput
+    public class MgtappTimesheetUpdateInput
     {
         public LinkIdInput? clientid { get; set; }
         public LinkIdInput? employeeid { get; set; }

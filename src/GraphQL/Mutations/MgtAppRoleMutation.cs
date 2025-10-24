@@ -15,16 +15,16 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppRoleMutation
     {
         [GraphQLName("insertOneMgtappRole")]
-        public async Task<MgtAppRole> InsertOneMgtAppRole(MgtAppRoleInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppRole> InsertOneMgtAppRole(MgtappRoleInsertInput data, [Service] MongoDbContext ctx)
         {
             var id = ObjectId.GenerateNewId().ToString();
-            var doc = new MgtAppRole { _id = id, rolename = input.rolename };
+            var doc = new MgtAppRole { _id = id, rolename = data.rolename };
             await ctx.Roles.InsertOneAsync(doc);
             return doc;
         }
 
         [GraphQLName("updateOneMgtappRole")]
-        public async Task<MgtAppRole?> UpdateOneMgtAppRole([GraphQLName("query")] MgtappRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppRole?> UpdateOneMgtAppRole([GraphQLName("query")] MgtappRoleQueryInput query, MgtappRoleUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppRole>>();
@@ -83,7 +83,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappRoles")]
-        public async Task<UpdateManyMgtAppRolesPayload> UpdateManyMgtAppRoles([GraphQLName("query")] MgtappRoleQueryInput query, MgtAppRoleSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppRolesPayload> UpdateManyMgtAppRoles([GraphQLName("query")] MgtappRoleQueryInput query, MgtappRoleUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 

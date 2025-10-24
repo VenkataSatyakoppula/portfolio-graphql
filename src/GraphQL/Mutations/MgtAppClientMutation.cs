@@ -32,20 +32,20 @@ namespace portfolio_graphql.GraphQL.Mutations
     {
         // Client mutations
         [GraphQLName("insertOneMgtappClient")]
-        public async Task<MgtAppClient> InsertOneMgtAppClient(MgtAppClientInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppClient> InsertOneMgtAppClient(MgtappClientInsertInput data, [Service] MongoDbContext ctx)
         {
             var id = ObjectId.GenerateNewId().ToString();
             var doc = new MgtAppClient
             {
                 _id = id,
-                clientname = input.clientname
+                clientname = data.clientname
             };
             await ctx.Clients.InsertOneAsync(doc);
             return doc;
         }
 
         [GraphQLName("updateOneMgtappClient")]
-        public async Task<MgtAppClient?> UpdateOneMgtAppClient([GraphQLName("query")] MgtappClientQueryInput query, MgtAppClientSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppClient?> UpdateOneMgtAppClient([GraphQLName("query")] MgtappClientQueryInput query, MgtappClientUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 
@@ -91,7 +91,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappClients")]
-        public async Task<UpdateManyMgtAppClientsPayload> UpdateManyMgtAppClients([GraphQLName("query")] MgtappClientQueryInput query, MgtAppClientSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppClientsPayload> UpdateManyMgtAppClients([GraphQLName("query")] MgtappClientQueryInput query, MgtappClientUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
 

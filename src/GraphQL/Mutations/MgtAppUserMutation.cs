@@ -31,36 +31,49 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppUserMutation
     {
         [GraphQLName("insertOneMgtappUser")]
-        public async Task<MgtAppUser> InsertOneMgtAppUser(MgtAppUserInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppUser> InsertOneMgtAppUser(MgtappUserInsertInput data, [Service] MongoDbContext ctx)
         {
             var id = ObjectId.GenerateNewId().ToString();
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
-            if (input.roleid == null || string.IsNullOrWhiteSpace(input.roleid.link))
+            if (data.roleid == null || string.IsNullOrWhiteSpace(data.roleid.link))
             {
                 throw new GraphQLException("roleid.link is required.");
             }
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
-            var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, input.roleid.link)).FirstOrDefaultAsync();
+            var role = await ctx.Roles.Find(Builders<MgtAppRole>.Filter.Eq(x => x._id, data.roleid.link)).FirstOrDefaultAsync();
             if (role == null) throw new GraphQLException("Invalid roleid.link: role not found.");
+
+            string? groupId = null;
+            if (data.groupid != null)
+            {
+                if (string.IsNullOrWhiteSpace(data.groupid.link))
+                {
+                    throw new GraphQLException("groupid.link is required when provided.");
+                }
+                var group = await ctx.Groups.Find(Builders<MgtAppGroup>.Filter.Eq(x => x._id, data.groupid.link)).FirstOrDefaultAsync();
+                if (group == null) throw new GraphQLException("Invalid groupid.link: group not found.");
+                groupId = group._id;
+            }
 
             var doc = new MgtAppUser
             {
                 _id = id,
-                username = input.username,
-                useremail = input.useremail,
+                username = data.username,
+                useremail = data.useremail,
                 clientid = client._id,
-                roleid = role._id
+                roleid = role._id,
+                groupid = groupId
             };
             await ctx.Users.InsertOneAsync(doc);
             return doc;
         }
 
         [GraphQLName("updateOneMgtappUser")]
-        public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, MgtappUserUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppUser>>();
@@ -96,15 +109,23 @@ namespace portfolio_graphql.GraphQL.Mutations
                 updates.Add(Builders<MgtAppUser>.Update.Set(x => x.roleid, role._id));
             }
 
-            if (!updates.Any())
+            if (set.groupid != null)
             {
-                throw new GraphQLException("No set fields provided.");
+                if (string.IsNullOrWhiteSpace(set.groupid.link))
+                {
+                    throw new GraphQLException("groupid.link is required when provided.");
+                }
+                var group = await ctx.Groups.Find(Builders<MgtAppGroup>.Filter.Eq(x => x._id, set.groupid.link)).FirstOrDefaultAsync();
+                if (group == null) throw new GraphQLException("Invalid groupid.link: group not found.");
+                updates.Add(Builders<MgtAppUser>.Update.Set(x => x.groupid, group._id));
             }
 
-            var combinedUpdate = Builders<MgtAppUser>.Update.Combine(updates);
-            var options = new FindOneAndUpdateOptions<MgtAppUser> { ReturnDocument = ReturnDocument.After };
-            var result = await ctx.Users.FindOneAndUpdateAsync(filter, combinedUpdate, options);
-            return result;
+            var update = updates.Count > 0 ? Builders<MgtAppUser>.Update.Combine(updates) : null;
+            if (update == null)
+            {
+                return await ctx.Users.Find(filter).FirstOrDefaultAsync();
+            }
+            return await ctx.Users.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<MgtAppUser> { ReturnDocument = ReturnDocument.After });
         }
 
         [GraphQLName("deleteOneMgtappUser")]
@@ -132,7 +153,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappUsers")]
-        public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput query, MgtAppUserSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput query, MgtappUserUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query);
             var updates = new List<UpdateDefinition<MgtAppUser>>();

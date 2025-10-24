@@ -30,22 +30,22 @@ namespace portfolio_graphql.GraphQL.Mutations
     [ExtendObjectType("Mutation")]
     public class MgtAppBankDetailsMutation
     {
-        [GraphQLName("insertOneMgtappBankDetail")]
-        public async Task<MgtAppBankDetails> InsertOneMgtAppBankDetail(MgtAppBankDetailsInsertInput input, [Service] MongoDbContext ctx)
+        [GraphQLName("insertOneMgtappBankdetail")]
+        public async Task<MgtAppBankDetails> InsertOneMgtAppBankDetail(MgtappBankdetailInsertInput data, [Service] MongoDbContext ctx)
         {
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
 
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
 
-            if (input.employeeid == null || string.IsNullOrWhiteSpace(input.employeeid.link))
+            if (data.employeeid == null || string.IsNullOrWhiteSpace(data.employeeid.link))
             {
                 throw new GraphQLException("employeeid.link is required.");
             }
-            var employee = await ctx.Employees.Find(Builders<MgtAppEmployee>.Filter.Eq(x => x._id, input.employeeid.link)).FirstOrDefaultAsync();
+            var employee = await ctx.Employees.Find(Builders<MgtAppEmployee>.Filter.Eq(x => x._id, data.employeeid.link)).FirstOrDefaultAsync();
             if (employee == null) throw new GraphQLException("Invalid employeeid.link: employee not found.");
 
             var doc = new MgtAppBankDetails
@@ -53,17 +53,17 @@ namespace portfolio_graphql.GraphQL.Mutations
                 _id = ObjectId.GenerateNewId().ToString(),
                 clientid = client._id,
                 employeeid = employee._id,
-                bankstatus = input.bankstatus,
-                bankroutingno = input.bankroutingno,
-                bankaccountno = input.bankaccountno
+                bankstatus = data.bankstatus,
+                bankroutingno = data.bankroutingno,
+                bankaccountno = data.bankaccountno
             };
 
             await ctx.BankDetails.InsertOneAsync(doc);
             return doc;
         }
 
-        [GraphQLName("updateOneMgtappBankDetail")]
-        public async Task<MgtAppBankDetails?> UpdateOneMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, MgtAppBankDetailsSetInput set, [Service] MongoDbContext ctx)
+        [GraphQLName("updateOneMgtappBankdetail")]
+        public async Task<MgtAppBankDetails?> UpdateOneMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, MgtappBankdetailUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppBankDetailsQuery.BuildFilter(query, ctx);
 
@@ -107,7 +107,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappBankDetails")]
-        public async Task<UpdateManyMgtAppBankDetailsPayload> UpdateManyMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput query, MgtAppBankDetailsSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppBankDetailsPayload> UpdateManyMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput query, MgtappBankdetailUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppBankDetailsQuery.BuildFilter(query, ctx);
 
@@ -148,7 +148,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             var result = await ctx.BankDetails.UpdateManyAsync(filter, combinedUpdate);
             return new UpdateManyMgtAppBankDetailsPayload { modifiedCount = (int)result.ModifiedCount };
         }
-        [GraphQLName("deleteOneMgtappBankDetail")]
+        [GraphQLName("deleteOneMgtappBankdetail")]
         public async Task<MgtAppBankDetails?> DeleteOneMgtAppBankDetail([GraphQLName("query")] MgtappBankDetailsQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)
@@ -173,7 +173,7 @@ namespace portfolio_graphql.GraphQL.Mutations
             return deleted;
         }
 
-        [GraphQLName("deleteManyMgtappBankDetails")]
+        [GraphQLName("deleteManyMgtappBankdetails")]
         public async Task<DeleteManyMgtAppBankDetailsPayload> DeleteManyMgtAppBankDetails([GraphQLName("query")] MgtappBankDetailsQueryInput query, [Service] MongoDbContext ctx)
         {
             bool hasFilter = !string.IsNullOrWhiteSpace(query._id)

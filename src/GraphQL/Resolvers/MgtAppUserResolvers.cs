@@ -29,5 +29,11 @@ namespace portfolio_graphql.GraphQL.Resolvers
             if (string.IsNullOrEmpty(user.roleid)) return null;
             return await roleById.LoadAsync(user.roleid);
         }
+
+        public async Task<MgtAppGroup?> GetGroupAsync([Parent] MgtAppUser user, GroupByIdDataLoader groupById)
+        {
+            if (string.IsNullOrEmpty(user.groupid)) return null;
+            return await groupById.LoadAsync(user.groupid);
+        }
     }
 }

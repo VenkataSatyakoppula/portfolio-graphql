@@ -34,24 +34,24 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppProfileMutation
     {
         [GraphQLName("insertOneMgtappProfile")]
-        public async Task<MgtAppProfile> InsertOneMgtAppProfile(MgtAppProfileInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppProfile> InsertOneMgtAppProfile(MgtappProfileInsertInput data, [Service] MongoDbContext ctx)
         {
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
 
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
 
             string? positionId = null;
-            if (input.positionid != null)
+            if (data.positionid != null)
             {
-                if (string.IsNullOrWhiteSpace(input.positionid.link))
+                if (string.IsNullOrWhiteSpace(data.positionid.link))
                 {
                     throw new GraphQLException("positionid.link is required when provided.");
                 }
-                var position = await ctx.Positions.Find(Builders<MgtAppPosition>.Filter.Eq(x => x._id, input.positionid.link)).FirstOrDefaultAsync();
+                var position = await ctx.Positions.Find(Builders<MgtAppPosition>.Filter.Eq(x => x._id, data.positionid.link)).FirstOrDefaultAsync();
                 if (position == null) throw new GraphQLException("Invalid positionid.link: position not found.");
                 positionId = position._id;
             }
@@ -61,21 +61,21 @@ namespace portfolio_graphql.GraphQL.Mutations
                 _id = ObjectId.GenerateNewId().ToString(),
                 clientid = client._id,
                 positionid = positionId,
-                resume = input.resume,
-                profilevisastatus = input.profilevisastatus,
-                profilerate = input.profilerate,
-                profilelastname = input.profilelastname,
-                profilefirstname = input.profilefirstname,
-                profileemail = input.profileemail,
-                profiletype = input.profiletype,
-                profileexpirydate = input.profileexpirydate,
-                profiledob = input.profiledob,
-                profilestatus = input.profilestatus,
-                profilephone = input.profilephone,
-                profilevendor = input.profilevendor,
-                profilecomments = input.profilecomments,
-                profilemanageravail = input.profilemanageravail,
-                profileavail = input.profileavail
+                resume = data.resume,
+                profilevisastatus = data.profilevisastatus,
+                profilerate = data.profilerate,
+                profilelastname = data.profilelastname,
+                profilefirstname = data.profilefirstname,
+                profileemail = data.profileemail,
+                profiletype = data.profiletype,
+                profileexpirydate = data.profileexpirydate,
+                profiledob = data.profiledob,
+                profilestatus = data.profilestatus,
+                profilephone = data.profilephone,
+                profilevendor = data.profilevendor,
+                profilecomments = data.profilecomments,
+                profilemanageravail = data.profilemanageravail,
+                profileavail = data.profileavail
             };
 
             await ctx.Profiles.InsertOneAsync(doc);
@@ -83,7 +83,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappProfile")]
-        public async Task<MgtAppProfile?> UpdateOneMgtAppProfile([GraphQLName("query")] MgtappProfileQueryInput query, MgtAppProfileSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppProfile?> UpdateOneMgtAppProfile([GraphQLName("query")] MgtappProfileQueryInput query, MgtappProfileUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -226,7 +226,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappProfiles")]
-        public async Task<UpdateManyMgtAppProfilesPayload> UpdateManyMgtAppProfiles([GraphQLName("query")] MgtappProfileQueryInput query, MgtAppProfileSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppProfilesPayload> UpdateManyMgtAppProfiles([GraphQLName("query")] MgtappProfileQueryInput query, MgtappProfileUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 

@@ -97,6 +97,55 @@ namespace portfolio_graphql.GraphQL.Queries
                 filters.Add(Builders<MgtAppUser>.Filter.In(u => u.clientid, clientIds));
             }
 
+            // NEW: nested role filter support
+            if (query.roleid != null)
+            {
+                var roleFilters = new List<FilterDefinition<MgtAppRole>>();
+                if (!string.IsNullOrWhiteSpace(query.roleid._id))
+                {
+                    roleFilters.Add(Builders<MgtAppRole>.Filter.Eq(r => r._id, query.roleid._id));
+                }
+                if (!string.IsNullOrWhiteSpace(query.roleid.rolename))
+                {
+                    roleFilters.Add(Builders<MgtAppRole>.Filter.Eq(r => r.rolename, query.roleid.rolename));
+                }
+                if (query.roleid.rolenameQuery != null)
+                {
+                    var rq = query.roleid.rolenameQuery;
+                    var rfq = new List<FilterDefinition<MgtAppRole>>();
+                    if (rq.eq != null) rfq.Add(Builders<MgtAppRole>.Filter.Eq(r => r.rolename, rq.eq));
+                    if (rq.ne != null) rfq.Add(Builders<MgtAppRole>.Filter.Ne(r => r.rolename, rq.ne));
+                    if (rq.@in != null && rq.@in.Count > 0) rfq.Add(Builders<MgtAppRole>.Filter.In(r => r.rolename, rq.@in));
+                    if (rq.nin != null && rq.nin.Count > 0) rfq.Add(Builders<MgtAppRole>.Filter.Nin(r => r.rolename, rq.nin));
+                    if (rq.regex != null)
+                    {
+                        var regex = new Regex(rq.regex, RegexOptions.IgnoreCase);
+                        rfq.Add(Builders<MgtAppRole>.Filter.Regex(r => r.rolename, new BsonRegularExpression(regex)));
+                    }
+                    if (rfq.Count > 0) roleFilters.Add(Builders<MgtAppRole>.Filter.And(rfq));
+                }
+
+                FilterDefinition<MgtAppRole> roleFilterDef;
+                if (!roleFilters.Any())
+                {
+                    roleFilterDef = Builders<MgtAppRole>.Filter.Empty;
+                }
+                else if (roleFilters.Count == 1)
+                {
+                    roleFilterDef = roleFilters[0];
+                }
+                else
+                {
+                    roleFilterDef = Builders<MgtAppRole>.Filter.And(roleFilters);
+                }
+
+                var roleIds = ctx.Roles.Find(roleFilterDef).Project(r => r._id).ToList();
+                if (roleIds.Count > 0)
+                {
+                    filters.Add(Builders<MgtAppUser>.Filter.In(u => u.roleid, roleIds));
+                }
+            }
+
             if (query.and != null && query.and.Any())
             {
                 var andFilters = query.and.Select(q => BuildFilter(q, ctx)).ToArray();

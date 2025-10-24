@@ -2,7 +2,7 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppBankDetailsTypes
 {
-    public class MgtAppBankDetailsSetInput
+    public class MgtappBankdetailUpdateInput
     {
         public LinkIdInput? clientid { get; set; }
         public LinkIdInput? employeeid { get; set; }

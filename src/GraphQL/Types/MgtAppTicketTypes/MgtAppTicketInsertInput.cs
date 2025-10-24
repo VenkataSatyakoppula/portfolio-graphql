@@ -2,7 +2,7 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppTicketTypes
 {
-    public class MgtAppTicketInsertInput
+    public class MgtappTicketInsertInput
     {
         public LinkIdInput? profileid { get; set; }
         public LinkIdInput? ticketcreatedby { get; set; }

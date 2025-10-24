@@ -32,21 +32,21 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppGroupMutation
     {
         [GraphQLName("insertOneMgtappGroup")]
-        public async Task<MgtAppGroup> InsertOneMgtAppGroup(MgtAppGroupInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppGroup> InsertOneMgtAppGroup(MgtappGroupInsertInput data, [Service] MongoDbContext ctx)
         {
             var id = ObjectId.GenerateNewId().ToString();
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
             // validate client via link
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
 
             var doc = new MgtAppGroup
             {
                 _id = id,
-                groupname = input.groupname,
+                groupname = data.groupname,
                 clientid = client._id
             };
             await ctx.Groups.InsertOneAsync(doc);
@@ -54,7 +54,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappGroup")]
-        public async Task<MgtAppGroup?> UpdateOneMgtAppGroup([GraphQLName("query")] MgtappGroupQueryInput query, MgtAppGroupSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppGroup?> UpdateOneMgtAppGroup([GraphQLName("query")] MgtappGroupQueryInput query, MgtappGroupUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -110,7 +110,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappGroups")]
-        public async Task<UpdateManyMgtAppGroupsPayload> UpdateManyMgtAppGroups([GraphQLName("query")] MgtappGroupQueryInput query, MgtAppGroupSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppGroupsPayload> UpdateManyMgtAppGroups([GraphQLName("query")] MgtappGroupQueryInput query, MgtappGroupUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = BuildFilter(query, ctx);
 
@@ -158,11 +158,6 @@ namespace portfolio_graphql.GraphQL.Mutations
             {
                 filters.Add(Builders<MgtAppGroup>.Filter.Eq(x => x.groupname, query.groupname));
             }
-            // Remove primitive clientid filter per new input shape
-            // if (!string.IsNullOrWhiteSpace(query.clientid))
-            // {
-            //     filters.Add(Builders>MgtAppGroup>.Filter.Eq(x => x.clientid, query.clientid));
-            // }
 
             // StringQueryInput for groupname
             if (query.groupnameQuery != null)

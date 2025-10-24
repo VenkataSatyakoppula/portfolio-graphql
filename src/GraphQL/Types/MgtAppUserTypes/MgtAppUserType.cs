@@ -22,6 +22,10 @@ namespace portfolio_graphql.GraphQL.Types.MgtAppUserTypes
             descriptor.Field("roleid")
                 .Type<ObjectType<MgtAppRole>>()
                 .ResolveWith<portfolio_graphql.GraphQL.Resolvers.MgtAppUserResolvers>(r => r.GetRoleAsync(default!, default!));
+
+            descriptor.Field("groupid")
+                .Type<ObjectType<MgtAppGroup>>()
+                .ResolveWith<portfolio_graphql.GraphQL.Resolvers.MgtAppUserResolvers>(r => r.GetGroupAsync(default!, default!));
         }
     }
 }

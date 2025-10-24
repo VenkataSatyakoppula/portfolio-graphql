@@ -17,5 +17,9 @@ namespace portfolio_graphql.Models
         [GraphQLIgnore]
         [BsonRepresentation(BsonType.ObjectId)]
         public string roleid { get; set; } = string.Empty;
+        [GraphQLIgnore]
+        [BsonIgnoreIfNull]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? groupid { get; set; } = null;
     }
 }

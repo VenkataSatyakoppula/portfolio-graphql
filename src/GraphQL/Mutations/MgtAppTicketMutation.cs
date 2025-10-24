@@ -12,33 +12,34 @@ namespace portfolio_graphql.GraphQL.Mutations
     [ExtendObjectType(OperationTypeNames.Mutation)]
     public class MgtAppTicketMutation
     {
+        [GraphQLName("insertOneMgtappTicket")]
         public async Task<MgtAppTicket?> InsertOneMgtAppTicket(
             [Service] MongoDbContext dbContext,
-            MgtAppTicketInsertInput input)
+            MgtappTicketInsertInput data)
         {
             var collection = dbContext.Tickets;
             var doc = new MgtAppTicket
             {
                 _id = ObjectId.GenerateNewId().ToString(),
-                profileid = input.profileid?.link,
-                ticketcreatedby = input.ticketcreatedby?.link,
-                ticketassignedto = input.ticketassignedto?.link,
-                positionid = input.positionid?.link,
-                groupid = input.groupid?.link,
-                ticketcreateddate = input.ticketcreateddate,
-                timesheetweek = input.timesheetweek,
-                tickettype = input.tickettype,
-                ticketstatus = input.ticketstatus,
-                ticketcategory = input.ticketcategory
+                profileid = data.profileid?.link,
+                ticketcreatedby = data.ticketcreatedby?.link,
+                ticketassignedto = data.ticketassignedto?.link,
+                positionid = data.positionid?.link,
+                groupid = data.groupid?.link,
+                ticketcreateddate = data.ticketcreateddate,
+                timesheetweek = data.timesheetweek,
+                tickettype = data.tickettype,
+                ticketstatus = data.ticketstatus,
+                ticketcategory = data.ticketcategory
             };
             await collection.InsertOneAsync(doc);
             return doc;
         }
-
+        [GraphQLName("updateOneMgtappTicket")]
         public async Task<MgtAppTicket?> UpdateOneMgtAppTicket(
             [Service] MongoDbContext dbContext,
             portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query,
-            MgtAppTicketSetInput set)
+            MgtappTicketUpdateInput set)
         {
             var collection = dbContext.Tickets;
             var filter = MgtAppTicketQuery.BuildFilter(query, dbContext);
@@ -61,11 +62,11 @@ namespace portfolio_graphql.GraphQL.Mutations
             var update = Builders<MgtAppTicket>.Update.Combine(updates);
             return await collection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<MgtAppTicket> { ReturnDocument = ReturnDocument.After });
         }
-
-        public async Task<long> UpdateManyMgtAppTicket(
+        [GraphQLName("updateManyMgtappTickets")]
+        public async Task<UpdateManyMgtAppTicketsPayload> UpdateManyMgtAppTicket(
             [Service] MongoDbContext dbContext,
             portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query,
-            MgtAppTicketSetInput set)
+            MgtappTicketUpdateInput set)
         {
             var collection = dbContext.Tickets;
             var filter = MgtAppTicketQuery.BuildFilter(query, dbContext);
@@ -83,30 +84,25 @@ namespace portfolio_graphql.GraphQL.Mutations
             if (set.ticketstatus != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketstatus, set.ticketstatus));
             if (set.ticketcategory != null) updates.Add(Builders<MgtAppTicket>.Update.Set(x => x.ticketcategory, set.ticketcategory));
 
-            if (updates.Count == 0) return 0;
+            if (updates.Count == 0)
+            {
+                return new UpdateManyMgtAppTicketsPayload { matchedCount = 0, modifiedCount = 0 };
+            }
 
             var update = Builders<MgtAppTicket>.Update.Combine(updates);
             var result = await collection.UpdateManyAsync(filter, update);
-            return result.ModifiedCount;
+            return new UpdateManyMgtAppTicketsPayload { matchedCount = (int)result.MatchedCount, modifiedCount = (int)result.ModifiedCount };
         }
 
-        public async Task<MgtAppTicket?> DeleteOneMgtAppTicket(
-            [Service] MongoDbContext dbContext,
-            portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query)
-        {
-            var collection = dbContext.Tickets;
-            var filter = MgtAppTicketQuery.BuildFilter(query, dbContext);
-            return await collection.FindOneAndDeleteAsync(filter);
-        }
-
-        public async Task<long> DeleteManyMgtAppTicket(
+        [GraphQLName("deleteManyMgtappTickets")]
+        public async Task<DeleteManyMgtAppTicketsPayload> DeleteManyMgtAppTicket(
             [Service] MongoDbContext dbContext,
             portfolio_graphql.GraphQL.Types.MgtappTicketQueryInput query)
         {
             var collection = dbContext.Tickets;
             var filter = MgtAppTicketQuery.BuildFilter(query, dbContext);
             var result = await collection.DeleteManyAsync(filter);
-            return result.DeletedCount;
+            return new DeleteManyMgtAppTicketsPayload { deletedCount = (int)result.DeletedCount };
         }
     }
 }

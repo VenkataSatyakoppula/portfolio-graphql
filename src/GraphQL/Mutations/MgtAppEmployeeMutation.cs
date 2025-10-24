@@ -33,38 +33,38 @@ namespace portfolio_graphql.GraphQL.Mutations
     public class MgtAppEmployeeMutation
     {
         [GraphQLName("insertOneMgtappEmployee")]
-        public async Task<MgtAppEmployee> InsertOneMgtAppEmployee(MgtAppEmployeeInsertInput input, [Service] MongoDbContext ctx)
+        public async Task<MgtAppEmployee> InsertOneMgtAppEmployee(MgtappEmployeeInsertInput data, [Service] MongoDbContext ctx)
         {
             var id = ObjectId.GenerateNewId().ToString();
 
-            if (input.clientid == null || string.IsNullOrWhiteSpace(input.clientid.link))
+            if (data.clientid == null || string.IsNullOrWhiteSpace(data.clientid.link))
             {
                 throw new GraphQLException("clientid.link is required.");
             }
 
-            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, input.clientid.link)).FirstOrDefaultAsync();
+            var client = await ctx.Clients.Find(Builders<MgtAppClient>.Filter.Eq(x => x._id, data.clientid.link)).FirstOrDefaultAsync();
             if (client == null) throw new GraphQLException("Invalid clientid.link: client not found.");
 
             string? employeeUserId = null;
-            if (input.employeeuserid != null)
+            if (data.employeeuserid != null)
             {
-                if (string.IsNullOrWhiteSpace(input.employeeuserid.link))
+                if (string.IsNullOrWhiteSpace(data.employeeuserid.link))
                 {
                     throw new GraphQLException("employeeuserid.link is required when provided.");
                 }
-                var user = await ctx.Users.Find(Builders<MgtAppUser>.Filter.Eq(x => x._id, input.employeeuserid.link)).FirstOrDefaultAsync();
+                var user = await ctx.Users.Find(Builders<MgtAppUser>.Filter.Eq(x => x._id, data.employeeuserid.link)).FirstOrDefaultAsync();
                 if (user == null) throw new GraphQLException("Invalid employeeuserid.link: user not found.");
                 employeeUserId = user._id;
             }
 
             string? managerUserId = null;
-            if (input.employeemanagerid != null)
+            if (data.employeemanagerid != null)
             {
-                if (string.IsNullOrWhiteSpace(input.employeemanagerid.link))
+                if (string.IsNullOrWhiteSpace(data.employeemanagerid.link))
                 {
                     throw new GraphQLException("employeemanagerid.link is required when provided.");
                 }
-                var mgr = await ctx.Users.Find(Builders<MgtAppUser>.Filter.Eq(x => x._id, input.employeemanagerid.link)).FirstOrDefaultAsync();
+                var mgr = await ctx.Users.Find(Builders<MgtAppUser>.Filter.Eq(x => x._id, data.employeemanagerid.link)).FirstOrDefaultAsync();  
                 if (mgr == null) throw new GraphQLException("Invalid employeemanagerid.link: user not found.");
                 managerUserId = mgr._id;
             }
@@ -75,20 +75,20 @@ namespace portfolio_graphql.GraphQL.Mutations
                 clientid = client._id,
                 employeeuserid = employeeUserId,
                 employeemanagerid = managerUserId,
-                employeephone = input.employeephone,
-                employeefirstname = input.employeefirstname,
-                employeesalaryrate = input.employeesalaryrate,
-                employeeworkemail = input.employeeworkemail,
-                employeeexpirydate = input.employeeexpirydate,
-                employeelastname = input.employeelastname,
-                employeedob = input.employeedob,
-                employeevisastatus = input.employeevisastatus,
-                employeeemail = input.employeeemail,
-                employeevendor = input.employeevendor,
-                employeetype = input.employeetype,
-                employeebillrate = input.employeebillrate,
-                employeesubstatus = input.employeesubstatus,
-                employeestatus = input.employeestatus
+                employeephone = data.employeephone,
+                employeefirstname = data.employeefirstname,
+                employeesalaryrate = data.employeesalaryrate,
+                employeeworkemail = data.employeeworkemail,
+                employeeexpirydate = data.employeeexpirydate,
+                employeelastname = data.employeelastname,
+                employeedob = data.employeedob,
+                employeevisastatus = data.employeevisastatus,
+                employeeemail = data.employeeemail,
+                employeevendor = data.employeevendor,
+                employeetype = data.employeetype,
+                employeebillrate = data.employeebillrate,
+                employeesubstatus = data.employeesubstatus,
+                employeestatus = data.employeestatus
             };
 
             await ctx.Employees.InsertOneAsync(doc);
@@ -96,7 +96,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateOneMgtappEmployee")]
-        public async Task<MgtAppEmployee?> UpdateOneMgtAppEmployee([GraphQLName("query")] MgtappEmployeeQueryInput query, MgtAppEmployeeSetInput set, [Service] MongoDbContext ctx)
+        public async Task<MgtAppEmployee?> UpdateOneMgtAppEmployee([GraphQLName("query")] MgtappEmployeeQueryInput query, MgtappEmployeeUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppEmployeeQuery.BuildFilter(query, ctx);
 
@@ -124,7 +124,12 @@ namespace portfolio_graphql.GraphQL.Mutations
                 updates.Add(Builders<MgtAppEmployee>.Update.Set(x => x.employeeuserid, user._id));
             }
 
-            if (set.employeemanagerid != null)
+            // Support unsetting or linking employeemanagerid
+            if (set.employeemanagerid_unset == true)
+            {
+                updates.Add(Builders<MgtAppEmployee>.Update.Unset(x => x.employeemanagerid));
+            }
+            else if (set.employeemanagerid != null)
             {
                 if (string.IsNullOrWhiteSpace(set.employeemanagerid.link))
                 {
@@ -211,7 +216,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         }
 
         [GraphQLName("updateManyMgtappEmployees")]
-        public async Task<UpdateManyMgtAppEmployeesPayload> UpdateManyMgtAppEmployees([GraphQLName("query")] MgtappEmployeeQueryInput query, MgtAppEmployeeSetInput set, [Service] MongoDbContext ctx)
+        public async Task<UpdateManyMgtAppEmployeesPayload> UpdateManyMgtAppEmployees([GraphQLName("query")] MgtappEmployeeQueryInput query, MgtappEmployeeUpdateInput set, [Service] MongoDbContext ctx)
         {
             var filter = MgtAppEmployeeQuery.BuildFilter(query, ctx);
 
@@ -239,7 +244,12 @@ namespace portfolio_graphql.GraphQL.Mutations
                 updates.Add(Builders<MgtAppEmployee>.Update.Set(x => x.employeeuserid, user._id));
             }
 
-            if (set.employeemanagerid != null)
+            // Support unsetting or linking employeemanagerid
+            if (set.employeemanagerid_unset == true)
+            {
+                updates.Add(Builders<MgtAppEmployee>.Update.Unset(x => x.employeemanagerid));
+            }
+            else if (set.employeemanagerid != null)
             {
                 if (string.IsNullOrWhiteSpace(set.employeemanagerid.link))
                 {

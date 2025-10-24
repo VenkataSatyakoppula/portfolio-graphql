@@ -2,7 +2,7 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppPositionTypes
 {
-    public class MgtAppPositionInsertInput
+    public class MgtappPositionInsertInput
     {
         public LinkIdInput clientid { get; set; } = new LinkIdInput();
         public LinkIdInput? groupid { get; set; }

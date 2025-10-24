@@ -3,7 +3,7 @@ using portfolio_graphql.GraphQL.Types;
 
 namespace portfolio_graphql.GraphQL.Types.MgtAppProfileTypes
 {
-    public class MgtAppProfileInsertInput
+    public class MgtappProfileInsertInput
     {
         public LinkIdInput clientid { get; set; } = new LinkIdInput();
         public LinkIdInput? positionid { get; set; }
