@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Linq;
 using HotChocolate;
+using portfolio_graphql.GraphQL.Queries;
 
 namespace portfolio_graphql.GraphQL.Mutations
 {
@@ -75,7 +76,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         [GraphQLName("updateOneMgtappUser")]
         public async Task<MgtAppUser?> UpdateOneMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, MgtappUserUpdateInput set, [Service] MongoDbContext ctx)
         {
-            var filter = BuildFilter(query);
+            var filter = BuildFilter(query, ctx);
             var updates = new List<UpdateDefinition<MgtAppUser>>();
 
             if (set.username != null)
@@ -131,11 +132,19 @@ namespace portfolio_graphql.GraphQL.Mutations
         [GraphQLName("deleteOneMgtappUser")]
         public async Task<MgtAppUser?> DeleteOneMgtAppUser([GraphQLName("query")] MgtappUserQueryInput query, [Service] MongoDbContext ctx)
         {
-            if (string.IsNullOrWhiteSpace(query._id) && query.usernameQuery == null && query.useremailQuery == null && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
+            if (string.IsNullOrWhiteSpace(query._id)
+                && query.clientid == null
+                && query.roleid == null
+                && string.IsNullOrWhiteSpace(query.username)
+                && string.IsNullOrWhiteSpace(query.useremail)
+                && query.usernameQuery == null
+                && query.useremailQuery == null
+                && (query.and == null || !query.and.Any())
+                && (query.or == null || !query.or.Any()))
             {
-                throw new GraphQLException("Delete requires a filter (provide _id, clientid, roleid, usernameQuery, useremailQuery, and/or logical groups).");
+                throw new GraphQLException("Delete requires a filter (provide _id, clientid, roleid, username/useremail, string queries, and/or logical groups).");
             }
-            var filter = BuildFilter(query);
+            var filter = BuildFilter(query, ctx);
             var deleted = await ctx.Users.FindOneAndDeleteAsync(filter);
             return deleted;
         }
@@ -143,11 +152,19 @@ namespace portfolio_graphql.GraphQL.Mutations
         [GraphQLName("deleteManyMgtappUsers")]
         public async Task<DeleteManyMgtAppUsersPayload> DeleteManyMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput query, [Service] MongoDbContext ctx)
         {
-            if (string.IsNullOrWhiteSpace(query._id) && query.usernameQuery == null && query.useremailQuery == null && (query.and == null || !query.and.Any()) && (query.or == null || !query.or.Any()))
+            if (string.IsNullOrWhiteSpace(query._id)
+                && query.clientid == null
+                && query.roleid == null
+                && string.IsNullOrWhiteSpace(query.username)
+                && string.IsNullOrWhiteSpace(query.useremail)
+                && query.usernameQuery == null
+                && query.useremailQuery == null
+                && (query.and == null || !query.and.Any())
+                && (query.or == null || !query.or.Any()))
             {
-                throw new GraphQLException("DeleteMany requires a filter (provide _id, clientid, roleid, usernameQuery, useremailQuery, and/or logical groups).");
+                throw new GraphQLException("DeleteMany requires a filter (provide _id, clientid, roleid, username/useremail, string queries, and/or logical groups).");
             }
-            var filter = BuildFilter(query);
+            var filter = BuildFilter(query, ctx);
             var result = await ctx.Users.DeleteManyAsync(filter);
             return new DeleteManyMgtAppUsersPayload { deletedCount = (int)result.DeletedCount };
         }
@@ -155,7 +172,7 @@ namespace portfolio_graphql.GraphQL.Mutations
         [GraphQLName("updateManyMgtappUsers")]
         public async Task<UpdateManyMgtAppUsersPayload> UpdateManyMgtAppUsers([GraphQLName("query")] MgtappUserQueryInput query, MgtappUserUpdateInput set, [Service] MongoDbContext ctx)
         {
-            var filter = BuildFilter(query);
+            var filter = BuildFilter(query, ctx);
             var updates = new List<UpdateDefinition<MgtAppUser>>();
 
             if (set.username != null)
@@ -199,14 +216,30 @@ namespace portfolio_graphql.GraphQL.Mutations
             return new UpdateManyMgtAppUsersPayload { modifiedCount = (int)result.ModifiedCount };
         }
 
-        private static FilterDefinition<MgtAppUser> BuildFilter(MgtappUserQueryInput query)
+        private static FilterDefinition<MgtAppUser> BuildFilter(MgtappUserQueryInput? query, MongoDbContext ctx)
         {
+            if (query == null)
+            {
+                return Builders<MgtAppUser>.Filter.Empty;
+            }
+
             var filters = new List<FilterDefinition<MgtAppUser>>();
 
             if (!string.IsNullOrWhiteSpace(query._id))
             {
                 filters.Add(Builders<MgtAppUser>.Filter.Eq(x => x._id, query._id));
             }
+
+            // Direct equality filters
+            if (!string.IsNullOrWhiteSpace(query.username))
+            {
+                filters.Add(Builders<MgtAppUser>.Filter.Eq(x => x.username, query.username));
+            }
+            if (!string.IsNullOrWhiteSpace(query.useremail))
+            {
+                filters.Add(Builders<MgtAppUser>.Filter.Eq(x => x.useremail, query.useremail));
+            }
+
             if (query.usernameQuery != null)
             {
                 var q = query.usernameQuery;
@@ -237,16 +270,78 @@ namespace portfolio_graphql.GraphQL.Mutations
                 }
                 if (fq.Count > 0) filters.Add(Builders<MgtAppUser>.Filter.And(fq));
             }
+
+            // Nested client filter using MgtAppClientQuery
+            if (query.clientid != null)
+            {
+                var clientFilter = MgtAppClientQuery.BuildFilter(query.clientid);
+                var clientIds = ctx.Clients.Find(clientFilter).Project(c => c._id).ToList();
+                if (clientIds.Count > 0)
+                {
+                    filters.Add(Builders<MgtAppUser>.Filter.In(u => u.clientid, clientIds));
+                }
+            }
+
+            // Nested role filter
+            if (query.roleid != null)
+            {
+                var roleFilters = new List<FilterDefinition<MgtAppRole>>();
+                if (!string.IsNullOrWhiteSpace(query.roleid._id))
+                {
+                    roleFilters.Add(Builders<MgtAppRole>.Filter.Eq(r => r._id, query.roleid._id));
+                }
+                if (!string.IsNullOrWhiteSpace(query.roleid.rolename))
+                {
+                    roleFilters.Add(Builders<MgtAppRole>.Filter.Eq(r => r.rolename, query.roleid.rolename));
+                }
+                if (query.roleid.rolenameQuery != null)
+                {
+                    var rq = query.roleid.rolenameQuery;
+                    var rfq = new List<FilterDefinition<MgtAppRole>>();
+                    if (rq.eq != null) rfq.Add(Builders<MgtAppRole>.Filter.Eq(r => r.rolename, rq.eq));
+                    if (rq.ne != null) rfq.Add(Builders<MgtAppRole>.Filter.Ne(r => r.rolename, rq.ne));
+                    if (rq.@in != null && rq.@in.Count > 0) rfq.Add(Builders<MgtAppRole>.Filter.In(r => r.rolename, rq.@in));
+                    if (rq.nin != null && rq.nin.Count > 0) rfq.Add(Builders<MgtAppRole>.Filter.Nin(r => r.rolename, rq.nin));
+                    if (rq.regex != null)
+                    {
+                        var regex = new Regex(rq.regex, RegexOptions.IgnoreCase);
+                        rfq.Add(Builders<MgtAppRole>.Filter.Regex(r => r.rolename, new BsonRegularExpression(regex)));
+                    }
+                    if (rfq.Count > 0) roleFilters.Add(Builders<MgtAppRole>.Filter.And(rfq));
+                }
+
+                FilterDefinition<MgtAppRole> roleFilterDef;
+                if (!roleFilters.Any())
+                {
+                    roleFilterDef = Builders<MgtAppRole>.Filter.Empty;
+                }
+                else if (roleFilters.Count == 1)
+                {
+                    roleFilterDef = roleFilters[0];
+                }
+                else
+                {
+                    roleFilterDef = Builders<MgtAppRole>.Filter.And(roleFilters);
+                }
+
+                var roleIds = ctx.Roles.Find(roleFilterDef).Project(r => r._id).ToList();
+                if (roleIds.Count > 0)
+                {
+                    filters.Add(Builders<MgtAppUser>.Filter.In(u => u.roleid, roleIds));
+                }
+            }
+
             if (query.and != null && query.and.Any())
             {
-                var andFilters = query.and.Select(BuildFilter).ToArray();
+                var andFilters = query.and.Select(q => BuildFilter(q, ctx)).ToArray();
                 filters.Add(Builders<MgtAppUser>.Filter.And(andFilters));
             }
             if (query.or != null && query.or.Any())
             {
-                var orFilters = query.or.Select(BuildFilter).ToArray();
+                var orFilters = query.or.Select(q => BuildFilter(q, ctx)).ToArray();
                 filters.Add(Builders<MgtAppUser>.Filter.Or(orFilters));
             }
+
             if (!filters.Any())
             {
                 return Builders<MgtAppUser>.Filter.Empty;

@@ -15,11 +15,47 @@ using portfolio_graphql.GraphQL.Types.MgtAppImmigrationTypes;
 using portfolio_graphql.GraphQL.Types.MgtAppInsuranceTypes;
 using portfolio_graphql.GraphQL.Types.MgtAppTimesheetsTypes;
 using portfolio_graphql.GraphQL.Types;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MongoDB
 builder.Services.AddSingleton<MongoDbContext>();
+
+// Add Authentication & Authorization (Azure AD / MSAL access tokens)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var instance = builder.Configuration["AzureAd:Instance"] ?? "https://login.microsoftonline.com";
+        var tenantId = builder.Configuration["AzureAd:TenantId"];
+        var clientId = builder.Configuration["AzureAd:ClientId"];
+        var audience = builder.Configuration["AzureAd:Audience"] ?? clientId;
+
+        options.Authority = $"{instance}/{tenantId}/v2.0";
+        options.Audience = audience;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidAudiences = new[]
+            {
+                clientId,
+                audience,
+                $"api://{clientId}"
+            },
+            ValidIssuers = new[]
+            {
+                $"https://login.microsoftonline.com/{tenantId}/v2.0",
+                $"https://sts.windows.net/{tenantId}/"
+            }
+        };
+        options.IncludeErrorDetails = true;
+    });
+
+builder.Services.AddAuthorization();
 
 // Add GraphQL & DataLoaders
 builder.Services
@@ -27,6 +63,7 @@ builder.Services
     .AddQueryType(d => d.Name("Query"))
     .AddMutationType(d => d.Name("Mutation"))
     .InitializeOnStartup()
+    // .AddAuthorization() // removed: rely on endpoint-level auth and attributes
     .AddTypeExtension<MgtAppClientQuery>()
     .AddTypeExtension<MgtAppRoleQuery>()
     .AddTypeExtension<MgtAppUserQuery>()
@@ -82,6 +119,9 @@ using (var scope = app.Services.CreateScope())
     ctx.EnsureTicketIndexes();
 }
 
-app.MapGraphQL("/api/v1/graphql");
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGraphQL("/api/v1/graphql").RequireAuthorization();
 
 app.Run();
